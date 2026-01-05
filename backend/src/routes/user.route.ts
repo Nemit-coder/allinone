@@ -4,6 +4,6 @@ import {registerUser, getUser , loginUser} from '../controllers/user.controller.
 
 router.get('/allusers', getUser)
 router.post('/register', registerUser)
-router.post('/login', loginUserc)
+router.post('/login', loginUser)
 
 export default router
