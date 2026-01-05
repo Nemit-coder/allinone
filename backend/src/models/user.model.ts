@@ -1,4 +1,4 @@
-import mongoose, { mongo } from "mongoose";
+import mongoose from "mongoose";
 import type {IUser} from '../types/user.type.js'
 
 const userSchema = new mongoose.Schema<IUser>({
@@ -12,7 +12,8 @@ const userSchema = new mongoose.Schema<IUser>({
     },
     email: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     password: {
         type : String,

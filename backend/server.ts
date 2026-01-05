@@ -1,4 +1,4 @@
-import dotenv from 'dotenv'
+import * as dotenv from 'dotenv'
 dotenv.config()
 import app from './app.ts'
 import connectDatabase from './src/config/db.ts'
