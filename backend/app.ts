@@ -1,10 +1,10 @@
 import express  from "express";
-import router from './src/routes/user.route.ts'
+import userRouter from './src/routes/user.route.ts'
 const app = express()
 
 app.use(express.json())
 
 // User Routes
-app.use('/api/v1/users', router)
+app.use('/api/v1/users', userRouter)
 
 export default app

@@ -1,6 +1,8 @@
 import User from '../models/user.model.ts'
 import type { Request, Response } from 'express'
 import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
+import {env} from '../config/env.ts'
 
  // Register User
 const registerUser = async (req : Request, res : Response) => {
@@ -72,14 +74,66 @@ const registerUser = async (req : Request, res : Response) => {
             }
         })
     } catch (error : any) {
+        console.log(`Server Error : ${error.message}`)
         res.status(500).json({ message: `Server Error : ${error.message}` })
     }
 }
 
 const getUser = async (req : Request, res: Response) => {
+    try {
+        // ==> Fetching user
+        const fetchedUser = await User.find()
+        if(!fetchedUser){
+            console.log('Error finding users')
+            return res.json({
+                success: false,
+                message: "Error finding users"
+            })
+        }
 
+        res.status(200).json({
+            success: true,
+            users : fetchedUser
+        })
+    } catch (error: any) {
+        console.log(`Server Error : ${error.message}`)
+        res.status(500).json({ message: `Server Error : ${error.message}` })
+    }
+}
+
+const loginUser = async (req: Request, res : Response) => {
+    try {
+        const {email, password} = req.body
+        const fetchedUser = await User.findOne({email})
+        if(!fetchedUser) {
+            console.log("User not found")
+            return res.status(404).json({message: "User not found"})
+        }
+
+        // ==> Decoding password
+        const decodedPassword = await bcrypt.compare(password, fetchedUser.password)
+        if(!decodedPassword){
+            console.log("password incorrect")
+            return res.status(401).json({message: "Invalid Password"})
+        }
+            const payload = {
+                id: fetchedUser._id,
+                email : fetchedUser.email,
+                userName: fetchedUser.userName
+            }
+            const token = jwt.sign(payload, env.JWT_SECRET, {expiresIn: '5h'});
+            res.status(200).json({
+                message: "Login successful",
+                token: token,
+                user: { id: fetchedUser._id, name: fetchedUser.email }
+            });
+    } catch (error : any) {
+        console.log(error.message)
+        res.status(500).json({message : `Server Error : ${error.message}`})
+    }
 }
 
 export {
-    registerUser
+    registerUser,
+    getUser
 }
