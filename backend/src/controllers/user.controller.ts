@@ -135,5 +135,6 @@ const loginUser = async (req: Request, res : Response) => {
 
 export {
     registerUser,
-    getUser
+    getUser,
+    loginUser
 }
