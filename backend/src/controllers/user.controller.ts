@@ -4,7 +4,7 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import {env} from '../config/env.ts'
 
- // Register User
+ /* ===== Register ===== */
 const registerUser = async (req : Request, res : Response) => {
     try {
         const {userName, fullName, email, password, avatar} = req.body
@@ -79,6 +79,7 @@ const registerUser = async (req : Request, res : Response) => {
     }
 }
 
+/* ===== Fetch User ===== */
 const getUser = async (req : Request, res: Response) => {
     try {
         // ==> Fetching user
@@ -101,6 +102,7 @@ const getUser = async (req : Request, res: Response) => {
     }
 }
 
+/* ===== Login ===== */
 const loginUser = async (req: Request, res : Response) => {
     try {
         const {email, password} = req.body
@@ -116,25 +118,108 @@ const loginUser = async (req: Request, res : Response) => {
             console.log("password incorrect")
             return res.status(401).json({message: "Invalid Password"})
         }
-            const payload = {
-                id: fetchedUser._id,
-                email : fetchedUser.email,
-                userName: fetchedUser.userName
-            }
-            const token = jwt.sign(payload, env.JWT_SECRET, {expiresIn: '5h'});
-            res.status(200).json({
-                message: "Login successful",
-                token: token,
-                user: { id: fetchedUser._id, name: fetchedUser.email }
-            });
+
+        // ==> Payload
+        const payload = {
+            id: fetchedUser._id,
+            email : fetchedUser.email,
+            userName: fetchedUser.userName
+        }
+        // ==> Token Signing
+        const token = jwt.sign(payload, env.JWT_SECRET, {expiresIn: '5h'});
+        res.status(200).json({
+            success: true,
+            message: "Login successful",
+            token: token,
+            user: { id: fetchedUser._id, name: fetchedUser.email }
+        });
     } catch (error : any) {
         console.log(error.message)
         res.status(500).json({message : `Server Error : ${error.message}`})
     }
 }
 
+/* ===== Update ===== */
+const updateUser = async (req: Request, res : Response) => {
+    try {
+        const userId = req.user!.id
+        const {email, password, userName, fullName, avatar} = req.body
+         const updateData: any = {}
+
+         // ==> Checking if Fields are given for updation
+        if (email) updateData.email = email.toLowerCase()
+        if (userName) updateData.userName = userName
+        if (fullName) updateData.fullName = fullName
+        if (avatar) updateData.avatar = avatar
+
+        if (password) {
+            console.log(password)
+        updateData.password = await bcrypt.hash(password, 10)
+        }
+
+        if (Object.keys(updateData).length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: 'No valid fields provided to update'
+            })
+        }
+
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            { $set: updateData },
+            { new: true, runValidators: true }
+        ).select('-password -refreshToken')
+
+        if (!updatedUser) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            })
+        }
+
+        res.status(200).json({
+            success: true,
+            message: " User has been updated successfully",
+            user: updatedUser
+        })
+
+    } catch (error : any) {
+        console.log(error.message)
+        res.status(500).json({
+            success: false,
+            message : `Server Error : ${error.message}`})
+     }
+}
+
+/* ===== Delete ===== */
+const deleteUser = async (req: Request, res: Response) => {
+    try {
+        const userId = req.user!.id
+        const findUser = await User.findByIdAndDelete(userId)
+
+        if(!findUser){
+            return res.json(400).json({
+                success: false,
+                message: "User was not deleted"
+            })
+        }
+
+        res.status(200).json({
+            success: false,
+            message: "User was deleted successfully"
+        })
+    } catch (error: any) {
+        console.log(error.message)
+        res.status(500).json({
+            success: true,
+            message : `Server Error : ${error.message}`})
+    }
+}
+
 export {
     registerUser,
+    loginUser,
     getUser,
-    loginUser
+    updateUser,
+    deleteUser
 }

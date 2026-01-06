@@ -1,9 +1,14 @@
 import express from 'express'
+import {registerUser, getUser , loginUser, updateUser, deleteUser} from '../controllers/user.controller.ts'
+import verifyJwt from '../middlewares/auth.middleware.ts'
 const router = express.Router()
-import {registerUser, getUser , loginUser} from '../controllers/user.controller.ts'
 
-router.get('/allusers', getUser)
+
+router.get('/allusers',verifyJwt, getUser)
 router.post('/register', registerUser)
 router.post('/login', loginUser)
+router.post('/update/:id',verifyJwt, updateUser)
+router.post('/delete/:id',verifyJwt,  deleteUser)
+
 
 export default router
