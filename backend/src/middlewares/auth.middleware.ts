@@ -14,19 +14,13 @@ interface JwtPayload {
 }
 
 const verifyJwt = async (req: Request, res: Response, next: NextFunction) => {
-    const authHeaders = req.headers.authorization
-     if (!authHeaders || !authHeaders.startsWith('Bearer ')) {
-        return res.status(401).json({
-        message: 'Access token missing'
-      })
-    }
+  const token = req.cookies?.token
 
-    const token = authHeaders.split(' ')[1]
-    if (!token) {
-      return res.status(401).json({
-        message: 'Invalid authorization header format'
-      })
-    }
+  if (!token) {
+    return res.status(401).json({
+      message: "Unauthorized"
+    })
+  }
 
     try {
         const decoded = jwt.verify(

@@ -6,7 +6,7 @@ import {env} from '../config/env.ts'
 
  /* ===== Register ===== */
 const registerUser = async (req : Request, res : Response) => {
-    try {
+    try {        
         const {userName, fullName, email, password, avatar} = req.body
         // ==> Validating Required Fields
         if (!email || !password || !userName || !fullName) {
@@ -73,6 +73,7 @@ const registerUser = async (req : Request, res : Response) => {
                 email: normalizedEmail
             }
         })
+        console.log(`User created successfully : ${createUser.userName}`)
     } catch (error : any) {
         console.log(`Server Error : ${error.message}`)
         res.status(500).json({ message: `Server Error : ${error.message}` })
@@ -127,6 +128,14 @@ const loginUser = async (req: Request, res : Response) => {
         }
         // ==> Token Signing
         const token = jwt.sign(payload, env.JWT_SECRET, {expiresIn: '5h'});
+
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: false,        // true in production (https)
+            sameSite: "lax",
+            maxAge: 7 * 24 * 60 * 60 * 1000
+          })
+
         res.status(200).json({
             success: true,
             message: "Login successful",

@@ -8,12 +8,15 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import axios from "axios"
+import { useToast } from "@/hooks/use-toast"
 
 interface SignInProps {
   onSignIn: () => void
 }
 
 export default function SignIn({ onSignIn }: SignInProps) {
+  const { toast } = useToast()
   const navigate = useNavigate()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -22,7 +25,62 @@ export default function SignIn({ onSignIn }: SignInProps) {
     e.preventDefault()
     // Mock authentication
     onSignIn()
-    navigate("/dashboard")
+    const finalData = {
+      email: email,
+      password: password
+    }
+
+    const api = axios.create({
+      baseURL: "http://localhost:3000/api/v1",
+      withCredentials: true
+    })
+
+    const sendData = api.post("/users/login", finalData)
+    sendData
+      .then((res) => {
+        if (res.data?.success === true) {
+          toast({
+            title: "Account created",
+            description: "Redirecting you to your dashboard...",
+          })
+
+          // Show toast briefly before navigating
+          setTimeout(() => {
+            navigate("/dashboard")
+          }, 1500)
+        } else {
+          toast({
+            variant: "destructive",
+            title: "Login failed",
+            description: res.data?.message ?? "Please check your details and try again.",
+          })
+        }
+      })
+      .catch((error) => {
+        console.error("Registration error:", error)
+        console.error("Error response:", error.response)
+        console.error("Error message:", error.message)
+        
+        let errorMessage = "Unable to create your account. Please try again."
+        
+        if (error.response) {
+          // Server responded with error status
+          errorMessage = error.response.data?.message || errorMessage
+        } else if (error.request) {
+          // Request was made but no response received
+          errorMessage = "No response from server. Please check if the backend is running."
+        } else {
+          // Something else happened
+          errorMessage = error.message || errorMessage
+        }
+        
+        toast({
+          variant: "destructive",
+          title: "Login failed",
+          description: errorMessage,
+        })
+      })
+    
   }
 
   const handleGoogleSignIn = () => {

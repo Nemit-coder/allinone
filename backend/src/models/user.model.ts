@@ -20,7 +20,8 @@ const userSchema = new mongoose.Schema<IUser>({
         required: true
     },
     avatar: {
-        type : String
+        type : String,
+        default: "https://ui-avatars.com/api/?name=John Doe"
     },
     refreshToken: {
         type: String

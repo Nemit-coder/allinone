@@ -12,27 +12,31 @@ import VideoUpload from "./pages/VideoUpload"
 import ImageUpload from "./pages/ImageUpload"
 import BlogUpload from "./pages/BlogUpload"
 import About from "./pages/About"
+import { Toaster } from "@/components/ui/toaster"
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
 
   return (
-    <Routes>
-      <Route path="/" element={<LandingPage />} />
-      <Route path="/signin" element={<SignIn onSignIn={() => setIsAuthenticated(true)} />} />
-      <Route path="/register" element={<Register onRegister={() => setIsAuthenticated(true)} />} />
+    <>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/signin" element={<SignIn onSignIn={() => setIsAuthenticated(true)} />} />
+        <Route path="/register" element={<Register />} />
 
-      {/* Dashboard routes - accessible for now */}
-      <Route path="/dashboard" element={<Dashboard isAuthenticated={isAuthenticated} />} />
-      <Route path="/chat" element={<Chat isAuthenticated={isAuthenticated} />} />
-      <Route path="/create" element={<CreateContent isAuthenticated={isAuthenticated} />} />
-      <Route path="/create/video" element={<VideoUpload isAuthenticated={isAuthenticated} />} />
-      <Route path="/create/image" element={<ImageUpload isAuthenticated={isAuthenticated} />} />
-      <Route path="/create/blog" element={<BlogUpload isAuthenticated={isAuthenticated} />} />
-      <Route path="/about" element={<About isAuthenticated={isAuthenticated} />} />
+        {/* Dashboard routes - accessible for now */}
+        <Route path="/dashboard" element={<Dashboard isAuthenticated={isAuthenticated} />} />
+        <Route path="/chat" element={<Chat isAuthenticated={isAuthenticated} />} />
+        <Route path="/create" element={<CreateContent isAuthenticated={isAuthenticated} />} />
+        <Route path="/create/video" element={<VideoUpload isAuthenticated={isAuthenticated} />} />
+        <Route path="/create/image" element={<ImageUpload isAuthenticated={isAuthenticated} />} />
+        <Route path="/create/blog" element={<BlogUpload isAuthenticated={isAuthenticated} />} />
+        <Route path="/about" element={<About isAuthenticated={isAuthenticated} />} />
 
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+      <Toaster />
+    </>
   )
 }
 
