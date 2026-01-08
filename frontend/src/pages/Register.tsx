@@ -1,20 +1,18 @@
-"use client"
-
 import type React from "react"
 
 import { useState } from "react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { AuthHeader } from "@/components/auth-header"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import axios from "axios"
+import api, { setAccessToken } from "@/src/lib/api"
 import { useToast } from "@/hooks/use-toast"
 
 export default function RegisterPage() {
-  
+  const navigate = useNavigate()
   const [formData, setFormData] = useState({
     username: "",
     fullname: "",
@@ -43,8 +41,6 @@ export default function RegisterPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log("=== FORM SUBMITTED ===")
-    console.log("Form data state:", formData)
     setIsLoading(true)
 
     const finalData = {
@@ -55,72 +51,50 @@ export default function RegisterPage() {
       avatar: avatarPreview || undefined,
     }
     
-    console.log("Sending registration data:", { ...finalData, password: "***" })
-    
-    const api = axios.create({
-      baseURL: "http://localhost:3000/api/v1",
-      withCredentials: true
-    })
+    try {
+      const res = await api.post("/users/register", finalData)
+      if (res.data?.success === true && res.data?.accessToken) {
+        setAccessToken(res.data.accessToken)
+        toast({
+          title: "Account created",
+          description: "Redirecting you to your dashboard...",
+        })
 
-    console.log("Full URL will be: http://localhost:5000/api/v1/users/register")
-    
-    const sendData = api.post("/users/register", finalData)
-    sendData
-      .then((res) => {
-        if (res.data?.success === true) {
-          toast({
-            title: "Account created",
-            description: "Redirecting you to your dashboard...",
-          })
-
-          // Show toast briefly before navigating
-          setTimeout(() => {
-            window.location.href = "/dashboard"
-          }, 1500)
-        } else {
-          toast({
-            variant: "destructive",
-            title: "Registration failed",
-            description: res.data?.message ?? "Please check your details and try again.",
-          })
-        }
-      })
-      .catch((error) => {
-        console.error("Registration error:", error)
-        console.error("Error response:", error.response)
-        console.error("Error message:", error.message)
-        
-        let errorMessage = "Unable to create your account. Please try again."
-        
-        if (error.response) {
-          // Server responded with error status
-          errorMessage = error.response.data?.message || errorMessage
-        } else if (error.request) {
-          // Request was made but no response received
-          errorMessage = "No response from server. Please check if the backend is running."
-        } else {
-          // Something else happened
-          errorMessage = error.message || errorMessage
-        }
-        
+        setTimeout(() => {
+          navigate("/dashboard")
+        }, 500)
+      } else {
         toast({
           variant: "destructive",
           title: "Registration failed",
-          description: errorMessage,
+          description: res.data?.message ?? "Please check your details and try again.",
         })
+      }
+    } catch (error: any) {
+      console.error("Registration error:", error)
+      
+      let errorMessage = "Unable to create your account. Please try again."
+      
+      if (error.response) {
+        errorMessage = error.response.data?.message || errorMessage
+      } else if (error.request) {
+        errorMessage = "No response from server. Please check if the backend is running."
+      } else {
+        errorMessage = error.message || errorMessage
+      }
+      
+      toast({
+        variant: "destructive",
+        title: "Registration failed",
+        description: errorMessage,
       })
-      .finally(() => {
-        setIsLoading(false)
-      })
+    } finally {
+      setIsLoading(false)
+    }
   }
 
-  const handleGoogleSignUp = async () => {
-    setIsLoading(true)
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-    localStorage.setItem("isAuthenticated", "true")
-    localStorage.setItem("userEmail", "user@gmail.com")
-    localStorage.setItem("userName", "Google User")
-    window.location.href = "/dashboard"
+  const handleGoogleSignUp = () => {
+   window.location.href = "http://localhost:3000/api/v1/auth/google"
   }
 
   return (

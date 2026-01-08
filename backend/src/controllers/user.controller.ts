@@ -3,6 +3,7 @@ import type { Request, Response } from 'express'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import {env} from '../config/env.ts'
+import { generateAccessToken, generateRefreshToken } from "../utils/token.ts"
 
  /* ===== Register ===== */
 const registerUser = async (req : Request, res : Response) => {
@@ -65,9 +66,24 @@ const registerUser = async (req : Request, res : Response) => {
              })
         }
 
+        // Generate tokens for automatic login after registration
+        const accessToken = generateAccessToken(createUser._id.toString())
+        const refreshToken = generateRefreshToken(createUser._id.toString())
+
+        createUser.refreshToken = refreshToken
+        await createUser.save()
+
+        res.cookie("refreshToken", refreshToken, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "strict",
+            maxAge: 7 * 24 * 60 * 60 * 1000
+        })
+
         res.status(200).json({ 
             success: true,
             message: 'User Created Successfully',
+            accessToken: accessToken,
             user: {
                 id: createUser._id,
                 email: normalizedEmail
@@ -75,6 +91,29 @@ const registerUser = async (req : Request, res : Response) => {
         })
         console.log(`User created successfully : ${createUser.userName}`)
     } catch (error : any) {
+        console.log(`Server Error : ${error.message}`)
+        res.status(500).json({ message: `Server Error : ${error.message}` })
+    }
+}
+
+/* ===== Fetch Current User ===== */
+const getCurrentUser = async (req: Request, res: Response) => {
+    try {
+        const userId = req.user!.id
+        const user = await User.findById(userId).select('-password -refreshToken')
+        
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            })
+        }
+
+        res.status(200).json({
+            success: true,
+            user
+        })
+    } catch (error: any) {
         console.log(`Server Error : ${error.message}`)
         res.status(500).json({ message: `Server Error : ${error.message}` })
     }
@@ -127,20 +166,24 @@ const loginUser = async (req: Request, res : Response) => {
             userName: fetchedUser.userName
         }
         // ==> Token Signing
-        const token = jwt.sign(payload, env.JWT_SECRET, {expiresIn: '5h'});
+        const accessToken = generateAccessToken(fetchedUser._id.toString())
+        const refreshToken = generateRefreshToken(fetchedUser._id.toString())
 
-        res.cookie("token", token, {
+        fetchedUser.refreshToken = refreshToken
+        await fetchedUser.save()
+
+        res.cookie("refreshToken", refreshToken, {
             httpOnly: true,
-            secure: false,        // true in production (https)
-            sameSite: "lax",
+            secure: true,
+            sameSite: "strict",
             maxAge: 7 * 24 * 60 * 60 * 1000
           })
 
         res.status(200).json({
             success: true,
             message: "Login successful",
-            token: token,
-            user: { id: fetchedUser._id, name: fetchedUser.email }
+            accessToken: accessToken,
+            user: fetchedUser
         });
     } catch (error : any) {
         console.log(error.message)
@@ -229,6 +272,7 @@ export {
     registerUser,
     loginUser,
     getUser,
+    getCurrentUser,
     updateUser,
     deleteUser
 }

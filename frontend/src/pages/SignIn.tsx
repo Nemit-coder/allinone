@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import axios from "axios"
+import api, { setAccessToken } from "@/src/lib/api"
 import { useToast } from "@/hooks/use-toast"
 
 interface SignInProps {
@@ -20,73 +20,62 @@ export default function SignIn({ onSignIn }: SignInProps) {
   const navigate = useNavigate()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Mock authentication
-    onSignIn()
+    setIsLoading(true)
+
     const finalData = {
       email: email,
       password: password
     }
 
-    const api = axios.create({
-      baseURL: "http://localhost:3000/api/v1",
-      withCredentials: true
-    })
+    try {
+      const res = await api.post("/users/login", finalData)
+      if (res.data?.success === true && res.data?.accessToken) {
+        setAccessToken(res.data.accessToken)
+        onSignIn()
+        toast({
+          title: "Login successful",
+          description: "Redirecting you to your dashboard...",
+        })
 
-    const sendData = api.post("/users/login", finalData)
-    sendData
-      .then((res) => {
-        if (res.data?.success === true) {
-          toast({
-            title: "Account created",
-            description: "Redirecting you to your dashboard...",
-          })
-
-          // Show toast briefly before navigating
-          setTimeout(() => {
-            navigate("/dashboard")
-          }, 1500)
-        } else {
-          toast({
-            variant: "destructive",
-            title: "Login failed",
-            description: res.data?.message ?? "Please check your details and try again.",
-          })
-        }
-      })
-      .catch((error) => {
-        console.error("Registration error:", error)
-        console.error("Error response:", error.response)
-        console.error("Error message:", error.message)
-        
-        let errorMessage = "Unable to create your account. Please try again."
-        
-        if (error.response) {
-          // Server responded with error status
-          errorMessage = error.response.data?.message || errorMessage
-        } else if (error.request) {
-          // Request was made but no response received
-          errorMessage = "No response from server. Please check if the backend is running."
-        } else {
-          // Something else happened
-          errorMessage = error.message || errorMessage
-        }
-        
+        setTimeout(() => {
+          navigate("/dashboard")
+        }, 500)
+      } else {
         toast({
           variant: "destructive",
           title: "Login failed",
-          description: errorMessage,
+          description: res.data?.message ?? "Please check your details and try again.",
         })
+      }
+    } catch (error: any) {
+      console.error("Login error:", error)
+      
+      let errorMessage = "Unable to sign in. Please try again."
+      
+      if (error.response) {
+        errorMessage = error.response.data?.message || errorMessage
+      } else if (error.request) {
+        errorMessage = "No response from server. Please check if the backend is running."
+      } else {
+        errorMessage = error.message || errorMessage
+      }
+      
+      toast({
+        variant: "destructive",
+        title: "Login failed",
+        description: errorMessage,
       })
-    
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const handleGoogleSignIn = () => {
-    // Mock Google OAuth
-    onSignIn()
-    navigate("/dashboard")
+    window.location.href = "http://localhost:3000/api/v1/auth/google"
   }
 
   return (
@@ -97,7 +86,7 @@ export default function SignIn({ onSignIn }: SignInProps) {
           <CardDescription>Sign in to your account to continue</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <Button variant="outline" className="w-full bg-transparent" onClick={handleGoogleSignIn}>
+          <Button variant="outline" className="w-full bg-transparent" onClick={handleGoogleSignIn} disabled={isLoading}>
             <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
               <path
                 d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -150,8 +139,8 @@ export default function SignIn({ onSignIn }: SignInProps) {
                 required
               />
             </div>
-            <Button type="submit" className="w-full">
-              Sign In
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? "Signing in..." : "Sign In"}
             </Button>
           </form>
         </CardContent>

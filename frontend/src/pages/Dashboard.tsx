@@ -3,12 +3,24 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Link } from "react-router-dom"
 import { Video, ImageIcon, FileText, TrendingUp, Users, Eye } from "lucide-react"
+import { useEffect } from "react"
+import api from "@/src/lib/api"
 
 interface DashboardProps {
   isAuthenticated: boolean
 }
 
+
+
+
 export default function Dashboard({ isAuthenticated }: DashboardProps) {
+  useEffect(() => {
+    api.get("/users/me")
+      .then(res => console.log("User:", res.data))
+      .catch(() => {
+        window.location.href = "/signin"
+      })
+  }, [])
   return (
     <AppLayout isAuthenticated={isAuthenticated}>
       <div className="container py-8 space-y-8">

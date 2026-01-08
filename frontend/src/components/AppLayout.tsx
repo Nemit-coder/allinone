@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom"
 import { Home, MessageSquare, PlusCircle, Info, LogOut, User } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import api, { setAccessToken, getAccessToken } from "@/src/lib/api"
 
 interface AppLayoutProps {
   children: React.ReactNode
@@ -10,6 +11,20 @@ interface AppLayoutProps {
 }
 
 export default function AppLayout({ children, isAuthenticated }: AppLayoutProps) {
+  const handleLogout = async () => {
+    try {
+      await api.post("/auth/logout")
+    } catch (error) {
+      console.error("Logout error:", error)
+    } finally {
+      setAccessToken(null)
+      window.location.href = "/signin"
+    }
+  }
+  
+  // Check token directly to ensure accurate auth state
+  const token = getAccessToken()
+  const isAuth = isAuthenticated || !!token
   const location = useLocation()
 
   const isActive = (path: string) => {
@@ -29,7 +44,7 @@ export default function AppLayout({ children, isAuthenticated }: AppLayoutProps)
               <span className="hidden font-bold text-xl sm:inline-block">ContentHub</span>
             </Link>
 
-            {isAuthenticated && (
+            {isAuth && (
               <div className="hidden md:flex items-center gap-1">
                 <Button variant={isActive("/dashboard") ? "secondary" : "ghost"} size="sm" asChild>
                   <Link to="/dashboard">
@@ -60,7 +75,7 @@ export default function AppLayout({ children, isAuthenticated }: AppLayoutProps)
           </div>
 
           <div className="flex items-center gap-4">
-            {isAuthenticated ? (
+            {isAuth ? (
               <div className="flex items-center gap-3">
                 <Avatar className="h-9 w-9 cursor-pointer">
                   <AvatarImage src="/placeholder.svg?height=36&width=36" alt="User" />
@@ -70,7 +85,7 @@ export default function AppLayout({ children, isAuthenticated }: AppLayoutProps)
                 </Avatar>
                 <Button variant="ghost" size="icon" asChild>
                   <Link to="/signin">
-                    <LogOut className="h-4 w-4" />
+                    <LogOut onClick={handleLogout} className="h-4 w-4" />
                   </Link>
                 </Button>
               </div>

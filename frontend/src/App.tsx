@@ -1,7 +1,7 @@
 "use client"
 
 import { Routes, Route, Navigate } from "react-router-dom"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import LandingPage from "./pages/LandingPage"
 import SignIn from "./pages/SignIn"
 import Register from "./pages/Register"
@@ -12,10 +12,19 @@ import VideoUpload from "./pages/VideoUpload"
 import ImageUpload from "./pages/ImageUpload"
 import BlogUpload from "./pages/BlogUpload"
 import About from "./pages/About"
+import AuthCallback from "./pages/AuthCallback"
 import { Toaster } from "@/components/ui/toaster"
+import ProtectedRoute from "./components/ProtectedRoute"
+import { getAccessToken } from "./lib/api"
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
+
+  useEffect(() => {
+    // Check if user is authenticated on mount
+    const token = getAccessToken()
+    setIsAuthenticated(!!token)
+  }, [])
 
   return (
     <>
@@ -23,14 +32,57 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/signin" element={<SignIn onSignIn={() => setIsAuthenticated(true)} />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/auth/callback" element={<AuthCallback />} />
 
         {/* Dashboard routes - accessible for now */}
-        <Route path="/dashboard" element={<Dashboard isAuthenticated={isAuthenticated} />} />
-        <Route path="/chat" element={<Chat isAuthenticated={isAuthenticated} />} />
-        <Route path="/create" element={<CreateContent isAuthenticated={isAuthenticated} />} />
-        <Route path="/create/video" element={<VideoUpload isAuthenticated={isAuthenticated} />} />
-        <Route path="/create/image" element={<ImageUpload isAuthenticated={isAuthenticated} />} />
-        <Route path="/create/blog" element={<BlogUpload isAuthenticated={isAuthenticated} />} />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard isAuthenticated={isAuthenticated} />
+              </ProtectedRoute>
+            }
+        />
+        <Route
+          path="/chat"
+          element={
+            <ProtectedRoute>
+              <Chat isAuthenticated={isAuthenticated} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/create"
+          element={
+            <ProtectedRoute>
+              <CreateContent isAuthenticated={isAuthenticated} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/create/video"
+          element={
+            <ProtectedRoute>
+              <VideoUpload isAuthenticated={isAuthenticated} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/create/image"
+          element={
+            <ProtectedRoute>
+              <ImageUpload isAuthenticated={isAuthenticated} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/create/blog"
+          element={
+            <ProtectedRoute>
+              <BlogUpload isAuthenticated={isAuthenticated} />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/about" element={<About isAuthenticated={isAuthenticated} />} />
 
         <Route path="*" element={<Navigate to="/" replace />} />
