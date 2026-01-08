@@ -1,5 +1,5 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
+import { Link } from "react-router-dom"
+import { Button } from "@/src/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Play, ImageIcon, FileText, MessageCircle, Users, Zap } from "lucide-react"
 
@@ -9,16 +9,18 @@ export default function LandingPage() {
       {/* Header */}
       <header className="border-b border-border bg-card">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="text-2xl font-bold text-foreground">
+          <Link to="/" className="text-2xl font-bold text-foreground">
             CreativeHub
           </Link>
           <div className="flex items-center gap-4">
-            <Link href="/signin">
-              <Button variant="ghost">Sign in</Button>
-            </Link>
-            <Link href="/register">
-              <Button>Get Started</Button>
-            </Link>
+          <Button asChild>
+            <Link to="/signin">Sign In</Link>
+          </Button>
+
+          <Button size="lg" asChild>
+            <Link to="/register">Start Creating</Link>
+          </Button>
+
           </div>
         </div>
       </header>
@@ -34,15 +36,19 @@ export default function LandingPage() {
             creative work to the world.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href="/register">
-              <Button size="lg" className="w-full sm:w-auto text-lg px-8 py-6">
-                Start Creating
-              </Button>
-            </Link>
-            <Link href="#features">
-              <Button size="lg" variant="outline" className="w-full sm:w-auto text-lg px-8 py-6 bg-transparent">
-                Explore Features
-              </Button>
+          <Button size="lg" className="w-full sm:w-auto text-lg px-8 py-6" asChild>
+            <Link to="/register">Start Creating</Link>
+          </Button>
+
+            <Link to="#features">
+            <Button
+            size="lg"
+            variant="outline"
+            className="w-full sm:w-auto text-lg px-8 py-6 bg-transparent"
+            asChild
+          >
+            <a href="#features">Explore Features</a>
+          </Button>
             </Link>
           </div>
         </div>
@@ -168,14 +174,14 @@ export default function LandingPage() {
             <p className="text-lg opacity-90 text-balance">
               Join thousands of creators who are already sharing their work and building their audience on CreativeHub.
             </p>
-            <Link href="/register">
-              <Button
-                size="lg"
-                className="bg-accent text-accent-foreground hover:bg-accent/90 text-lg px-8 py-6 w-full sm:w-auto"
-              >
-                Get Started for Free
-              </Button>
-            </Link>
+            <Button
+              size="lg"
+              className="bg-accent text-accent-foreground hover:bg-accent/90 text-lg px-8 py-6 w-full sm:w-auto"
+              asChild
+            >
+              <Link to="/register">Get Started for Free</Link>
+            </Button>
+
           </div>
         </div>
       </section>
@@ -186,13 +192,13 @@ export default function LandingPage() {
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="text-sm text-muted-foreground">© 2025 CreativeHub. All rights reserved.</div>
             <div className="flex items-center gap-6">
-              <Link href="#" className="text-sm text-muted-foreground hover:text-foreground">
+              <Link to="#" className="text-sm text-muted-foreground hover:text-foreground">
                 Privacy
               </Link>
-              <Link href="#" className="text-sm text-muted-foreground hover:text-foreground">
+              <Link to="#" className="text-sm text-muted-foreground hover:text-foreground">
                 Terms
               </Link>
-              <Link href="#" className="text-sm text-muted-foreground hover:text-foreground">
+              <Link to="#" className="text-sm text-muted-foreground hover:text-foreground">
                 Contact
               </Link>
             </div>

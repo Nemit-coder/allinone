@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/src/components/ui/button"
 import { Video, ImageIcon, FileText, MessageSquare, Users, TrendingUp } from "lucide-react"
 
 export default function LandingPage() {

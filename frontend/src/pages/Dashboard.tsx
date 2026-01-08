@@ -1,9 +1,9 @@
 import AppLayout from "@/src/components/AppLayout"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/src/components/ui/button"
 import { Link } from "react-router-dom"
 import { Video, ImageIcon, FileText, TrendingUp, Users, Eye } from "lucide-react"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import api from "@/src/lib/api"
 
 interface DashboardProps {
@@ -14,9 +14,14 @@ interface DashboardProps {
 
 
 export default function Dashboard({ isAuthenticated }: DashboardProps) {
+  const [username, setUsername] = useState(null)
   useEffect(() => {
     api.get("/users/me")
-      .then(res => console.log("User:", res.data))
+      .then((res) => {
+        // console.log("Userfd :", res.data.user.userName)
+        // console.log("User user :", res.data)
+        setUsername(res.data.user.userName)
+      })
       .catch(() => {
         window.location.href = "/signin"
       })
@@ -27,7 +32,7 @@ export default function Dashboard({ isAuthenticated }: DashboardProps) {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-            <p className="text-muted-foreground mt-2">Welcome back! Here's your content overview.</p>
+            <p className="text-muted-foreground mt-2">Welcome back {username}! Here's your content overview.</p>
           </div>
           <Button asChild>
             <Link to="/create">Create Content</Link>

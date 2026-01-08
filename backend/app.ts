@@ -3,10 +3,13 @@ import userRouter from './src/routes/user.route.ts'
 import authRouter from './src/routes/auth.route.ts'
 import cors from 'cors'
 import cookieParser from "cookie-parser"
+import passport from "./src/config/passport.config.js"
+
 const app = express()
 
 app.use(express.json())
 app.use(cookieParser())
+app.use(passport.initialize())
 
 app.use(cors({
     origin: "http://localhost:5173",

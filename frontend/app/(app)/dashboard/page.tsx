@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { AppNav } from "@/components/app-nav"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/src/components/ui/button"
 import { Play, ImageIcon, FileText, TrendingUp, Users, Eye } from "lucide-react"
 
 export default function DashboardPage() {

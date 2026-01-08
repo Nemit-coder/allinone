@@ -1,9 +1,10 @@
 import type React from "react"
 import { Link, useLocation } from "react-router-dom"
-import { Home, MessageSquare, PlusCircle, Info, LogOut, User } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { Home, MessageSquare, PlusCircle, Info, LogOut } from "lucide-react"
+import { Button } from "@/src/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import api, { setAccessToken, getAccessToken } from "@/src/lib/api"
+import { useEffect, useState } from "react"
 
 interface AppLayoutProps {
   children: React.ReactNode
@@ -11,6 +12,8 @@ interface AppLayoutProps {
 }
 
 export default function AppLayout({ children, isAuthenticated }: AppLayoutProps) {
+  const [userData, setUserData] = useState<{ userName?: string; avatar?: string } | null>(null)
+  
   const handleLogout = async () => {
     try {
       await api.post("/auth/logout")
@@ -26,6 +29,23 @@ export default function AppLayout({ children, isAuthenticated }: AppLayoutProps)
   const token = getAccessToken()
   const isAuth = isAuthenticated || !!token
   const location = useLocation()
+
+  useEffect(() => {
+    if (isAuth && token) {
+      api.get("/users/me")
+        .then((res) => {
+          if (res.data?.user) {
+            setUserData({
+              userName: res.data.user.userName,
+              avatar: res.data.user.avatar,
+            })
+          }
+        })
+        .catch(() => {
+          // Silently fail - user might not be authenticated
+        })
+    }
+  }, [isAuth, token])
 
   const isActive = (path: string) => {
     return location.pathname === path || location.pathname.startsWith(path + "/")
@@ -78,16 +98,19 @@ export default function AppLayout({ children, isAuthenticated }: AppLayoutProps)
             {isAuth ? (
               <div className="flex items-center gap-3">
                 <Avatar className="h-9 w-9 cursor-pointer">
-                  <AvatarImage src="/placeholder.svg?height=36&width=36" alt="User" />
+                  <AvatarImage src={userData?.avatar} alt="User" />
                   <AvatarFallback>
-                    <User className="h-5 w-5" />
+                    {userData?.userName?.[0]?.toUpperCase() || "U"}
                   </AvatarFallback>
                 </Avatar>
-                <Button variant="ghost" size="icon" asChild>
-                  <Link to="/signin">
-                    <LogOut onClick={handleLogout} className="h-4 w-4" />
-                  </Link>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleLogout}
+                >
+                  <LogOut className="h-4 w-4" />
                 </Button>
+
               </div>
             ) : (
               <div className="flex items-center gap-2">

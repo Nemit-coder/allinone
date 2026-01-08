@@ -4,19 +4,18 @@ import type React from "react"
 
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/src/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import api, { setAccessToken } from "@/src/lib/api"
-import { useToast } from "@/hooks/use-toast"
+import toast from "react-hot-toast"
 
 interface SignInProps {
   onSignIn: () => void
 }
 
 export default function SignIn({ onSignIn }: SignInProps) {
-  const { toast } = useToast()
   const navigate = useNavigate()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -36,20 +35,13 @@ export default function SignIn({ onSignIn }: SignInProps) {
       if (res.data?.success === true && res.data?.accessToken) {
         setAccessToken(res.data.accessToken)
         onSignIn()
-        toast({
-          title: "Login successful",
-          description: "Redirecting you to your dashboard...",
-        })
+        toast.success("Login successful! Redirecting you to your dashboard...")
 
         setTimeout(() => {
           navigate("/dashboard")
         }, 500)
       } else {
-        toast({
-          variant: "destructive",
-          title: "Login failed",
-          description: res.data?.message ?? "Please check your details and try again.",
-        })
+        toast.error(res.data?.message ?? "Please check your details and try again.")
       }
     } catch (error: any) {
       console.error("Login error:", error)
@@ -64,11 +56,7 @@ export default function SignIn({ onSignIn }: SignInProps) {
         errorMessage = error.message || errorMessage
       }
       
-      toast({
-        variant: "destructive",
-        title: "Login failed",
-        description: errorMessage,
-      })
+      toast.error(errorMessage)
     } finally {
       setIsLoading(false)
     }
@@ -139,8 +127,8 @@ export default function SignIn({ onSignIn }: SignInProps) {
                 required
               />
             </div>
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Signing in..." : "Sign In"}
+            <Button type="submit" className="w-full" asChild>
+              <Link to="/signin">Sign in</Link>
             </Button>
           </form>
         </CardContent>

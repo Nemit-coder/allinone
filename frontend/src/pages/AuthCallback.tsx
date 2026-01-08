@@ -1,32 +1,24 @@
 import { useEffect } from "react"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import { setAccessToken } from "@/src/lib/api"
-import { useToast } from "@/hooks/use-toast"
+import toast from "react-hot-toast"
 
 export default function AuthCallback() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  const { toast } = useToast()
 
   useEffect(() => {
     const token = searchParams.get("token")
     
     if (token) {
       setAccessToken(token)
-      toast({
-        title: "Login successful",
-        description: "Welcome back!",
-      })
+      toast.success("Login successful! Welcome back!")
       navigate("/dashboard")
     } else {
-      toast({
-        variant: "destructive",
-        title: "Authentication failed",
-        description: "No token received from authentication provider.",
-      })
+      toast.error("Authentication failed. No token received from authentication provider.")
       navigate("/signin")
     }
-  }, [searchParams, navigate, toast])
+  }, [searchParams, navigate])
 
   return (
     <div className="min-h-screen flex items-center justify-center">

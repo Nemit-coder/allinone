@@ -13,7 +13,7 @@ import ImageUpload from "./pages/ImageUpload"
 import BlogUpload from "./pages/BlogUpload"
 import About from "./pages/About"
 import AuthCallback from "./pages/AuthCallback"
-import { Toaster } from "@/components/ui/toaster"
+import { Toaster } from "react-hot-toast"
 import ProtectedRoute from "./components/ProtectedRoute"
 import { getAccessToken } from "./lib/api"
 
@@ -87,7 +87,7 @@ function App() {
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-      <Toaster />
+      <Toaster position="top-right" />
     </>
   )
 }

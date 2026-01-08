@@ -2,14 +2,14 @@ import type React from "react"
 
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/src/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { AuthHeader } from "@/components/auth-header"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import api, { setAccessToken } from "@/src/lib/api"
-import { useToast } from "@/hooks/use-toast"
+import toast from "react-hot-toast"
 
 export default function RegisterPage() {
   const navigate = useNavigate()
@@ -21,7 +21,6 @@ export default function RegisterPage() {
   })
   const [avatarPreview, setAvatarPreview] = useState<string>("")
   const [isLoading, setIsLoading] = useState(false)
-  const { toast } = useToast()
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -55,20 +54,13 @@ export default function RegisterPage() {
       const res = await api.post("/users/register", finalData)
       if (res.data?.success === true && res.data?.accessToken) {
         setAccessToken(res.data.accessToken)
-        toast({
-          title: "Account created",
-          description: "Redirecting you to your dashboard...",
-        })
+        toast.success("Account created! Redirecting you to your dashboard...")
 
         setTimeout(() => {
           navigate("/dashboard")
         }, 500)
       } else {
-        toast({
-          variant: "destructive",
-          title: "Registration failed",
-          description: res.data?.message ?? "Please check your details and try again.",
-        })
+        toast.error(res.data?.message ?? "Please check your details and try again.")
       }
     } catch (error: any) {
       console.error("Registration error:", error)
@@ -83,11 +75,7 @@ export default function RegisterPage() {
         errorMessage = error.message || errorMessage
       }
       
-      toast({
-        variant: "destructive",
-        title: "Registration failed",
-        description: errorMessage,
-      })
+      toast.error(errorMessage)
     } finally {
       setIsLoading(false)
     }
@@ -182,8 +170,8 @@ export default function RegisterPage() {
                 />
               </div>
 
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Creating account..." : "Create account"}
+              <Button type="submit" className="w-full" isLoading={isLoading}>
+                Create account
               </Button>
             </form>
 
