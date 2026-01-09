@@ -160,11 +160,11 @@ const loginUser = async (req: Request, res : Response) => {
         }
 
         // ==> Payload
-        const payload = {
-            id: fetchedUser._id,
-            email : fetchedUser.email,
-            userName: fetchedUser.userName
-        }
+        // const payload = {
+        //     id: fetchedUser._id,
+        //     email : fetchedUser.email,
+        //     userName: fetchedUser.userName
+        // }
         // ==> Token Signing
         const accessToken = generateAccessToken(fetchedUser._id.toString())
         const refreshToken = generateRefreshToken(fetchedUser._id.toString())

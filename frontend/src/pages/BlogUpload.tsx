@@ -3,11 +3,11 @@
 import type React from "react"
 
 import { useState } from "react"
-import AppLayout from "@/src/components/AppLayout"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/src/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import AppLayout from "../components/AppLayout"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card"
+import { Button } from "../components/ui/button"
+import { Input } from "../components/ui/input"
+import { Label } from "../components/ui/label"
 import { Link } from "react-router-dom"
 import { FileText, ArrowLeft, Eye } from "lucide-react"
 

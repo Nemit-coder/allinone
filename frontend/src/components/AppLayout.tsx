@@ -1,9 +1,9 @@
 import type React from "react"
 import { Link, useLocation } from "react-router-dom"
 import { Home, MessageSquare, PlusCircle, Info, LogOut } from "lucide-react"
-import { Button } from "@/src/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import api, { setAccessToken, getAccessToken } from "@/src/lib/api"
+import { Button } from "../components/ui/button"
+import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar"
+import api, { setAccessToken, getAccessToken } from "../lib/api"
 import { useEffect, useState } from "react"
 
 interface AppLayoutProps {
@@ -35,6 +35,7 @@ export default function AppLayout({ children, isAuthenticated }: AppLayoutProps)
       api.get("/users/me")
         .then((res) => {
           if (res.data?.user) {
+            // console.log(res.data)
             setUserData({
               userName: res.data.user.userName,
               avatar: res.data.user.avatar,
@@ -97,8 +98,10 @@ export default function AppLayout({ children, isAuthenticated }: AppLayoutProps)
           <div className="flex items-center gap-4">
             {isAuth ? (
               <div className="flex items-center gap-3">
-                <Avatar className="h-9 w-9 cursor-pointer">
-                  <AvatarImage src={userData?.avatar} alt="User" />
+                <Avatar className="h-9 w-9 cursor-pointer"  key={userData?.avatar || 'fallback'}>
+                  {/* {userData?.avatar ? (
+                    <AvatarImage src={userData?.avatar} alt="User" />
+                  ) : null} */}
                   <AvatarFallback>
                     {userData?.userName?.[0]?.toUpperCase() || "U"}
                   </AvatarFallback>

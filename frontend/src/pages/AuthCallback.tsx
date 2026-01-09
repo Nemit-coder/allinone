@@ -1,6 +1,6 @@
 import { useEffect } from "react"
 import { useNavigate, useSearchParams } from "react-router-dom"
-import { setAccessToken } from "@/src/lib/api"
+import { setAccessToken } from "../lib/api"
 import toast from "react-hot-toast"
 
 export default function AuthCallback() {

@@ -2,13 +2,12 @@ import type React from "react"
 
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
-import { Button } from "@/src/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { AuthHeader } from "@/components/auth-header"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import api, { setAccessToken } from "@/src/lib/api"
+import { Button } from "../components/ui/button"
+import { Input } from "../components/ui/input"
+import { Label } from "../components/ui/label"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../components/ui/card"
+import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar"
+import api, { setAccessToken } from "../lib/api"
 import toast from "react-hot-toast"
 
 export default function RegisterPage() {
@@ -87,7 +86,6 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <AuthHeader />
       <div className="flex items-center justify-center px-4 py-12">
         <Card className="w-full max-w-md">
           <CardHeader className="space-y-1">

@@ -1,5 +1,5 @@
-import AppLayout from "@/src/components/AppLayout"
-import { Card, CardContent } from "@/src/components/ui/card"
+import AppLayout from "../components/AppLayout"
+import { Card, CardContent } from "../components/ui/card"
 import { Users, Target, Lightbulb, Heart } from "lucide-react"
 
 interface AboutProps {

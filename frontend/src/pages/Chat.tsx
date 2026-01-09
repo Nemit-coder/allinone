@@ -3,11 +3,11 @@
 import type React from "react"
 
 import { useState } from "react"
-import AppLayout from "@/src/components/AppLayout"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/src/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { ScrollArea } from "@/components/ui/scroll-area"
+import AppLayout from "../components/AppLayout"
+import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar"
+import { Button } from "../components/ui/button"
+import { Input } from "../components/ui/input"
+import { ScrollArea } from "../components/ui/scroll-area"
 import { Send, Search, MoreVertical, Phone, Video } from "lucide-react"
 
 interface ChatProps {

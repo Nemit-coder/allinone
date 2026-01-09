@@ -1,5 +1,5 @@
 import { Navigate } from "react-router-dom"
-import { getAccessToken } from "@/src/lib/api"
+import { getAccessToken } from "../lib/api"
 
 export default function ProtectedRoute({ children }: { children: JSX.Element }) {
   const accessToken = getAccessToken()

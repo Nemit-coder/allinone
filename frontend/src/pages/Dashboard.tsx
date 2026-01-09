@@ -1,10 +1,10 @@
-import AppLayout from "@/src/components/AppLayout"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/src/components/ui/button"
+import AppLayout from "../components/AppLayout"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card"
+import { Button } from "../components/ui/button"
 import { Link } from "react-router-dom"
 import { Video, ImageIcon, FileText, TrendingUp, Users, Eye } from "lucide-react"
 import { useEffect, useState } from "react"
-import api from "@/src/lib/api"
+import api from "../lib/api"
 
 interface DashboardProps {
   isAuthenticated: boolean
