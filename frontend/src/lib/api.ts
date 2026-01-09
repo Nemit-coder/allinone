@@ -46,15 +46,39 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config
+    if (!error.response) {
+      return Promise.reject(error)
+    }             
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    const status = error.response.status
+    const url = originalRequest.url
+
+    const isAuthRoute =
+    url.includes("/users/login") ||
+    url.includes("/users/register") ||
+    url.includes("/auth/refresh") ||
+    url.includes("/auth/google")
+
+    if (isAuthRoute) {
+      return Promise.reject(error)
+    }
+
+    if (status === 401 && !originalRequest._retry) {
       originalRequest._retry = true
 
-      const res = await api.post("/auth/refresh")
-      setAccessToken(res.data.accessToken)
+      try {
+        const res = await api.post("/auth/refresh")
+        const newAccessToken = res.data.accessToken
 
-      originalRequest.headers.Authorization = `Bearer ${res.data.accessToken}`
-      return api(originalRequest)
+        setAccessToken(newAccessToken)
+
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`
+        return api(originalRequest)
+      } catch (refreshError) {
+        setAccessToken(null)
+        window.location.href = "/signin"
+        return Promise.reject(refreshError)
+      }
     }
 
     return Promise.reject(error)

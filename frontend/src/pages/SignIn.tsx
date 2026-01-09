@@ -50,8 +50,10 @@ export default function SignIn({ onSignIn }: SignInProps) {
       
       if (error.response) {
         errorMessage = error.response.data?.message || errorMessage
+        console.log(error.response)
       } else if (error.request) {
         errorMessage = "No response from server. Please check if the backend is running."
+        console.log(error.request)
       } else {
         errorMessage = error.message || errorMessage
       }
@@ -127,8 +129,8 @@ export default function SignIn({ onSignIn }: SignInProps) {
                 required
               />
             </div>
-            <Button type="submit" className="w-full" asChild>
-              <Link to="/signin">Sign in</Link>
+            <Button type="submit" className="w-full">
+              Sign in
             </Button>
           </form>
         </CardContent>
