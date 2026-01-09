@@ -9,6 +9,10 @@ import { generateAccessToken, generateRefreshToken } from "../utils/token.ts"
 const registerUser = async (req : Request, res : Response) => {
     try {        
         const {userName, fullName, email, password, avatar} = req.body
+        let avatarUrl = undefined;
+        if (req.file) {
+          avatarUrl = `/uploads/avatars/${req.file.filename}`;
+        }
         // ==> Validating Required Fields
         if (!email || !password || !userName || !fullName) {
             return res.status(400).json({
@@ -55,7 +59,7 @@ const registerUser = async (req : Request, res : Response) => {
             fullName: fullName,
             email: normalizedEmail,
             password: passwordHash,
-            avatar: avatar,
+            avatar: avatarUrl ?? "",
             // refreshToken: refreshToken
         })
 
@@ -86,7 +90,8 @@ const registerUser = async (req : Request, res : Response) => {
             accessToken: accessToken,
             user: {
                 id: createUser._id,
-                email: normalizedEmail
+                email: normalizedEmail,
+                avatar: createUser.avatar
             }
         })
         console.log(`User created successfully : ${createUser.userName}`)
@@ -153,7 +158,7 @@ const loginUser = async (req: Request, res : Response) => {
         }
 
         // ==> Decoding password
-        const decodedPassword = await bcrypt.compare(password, fetchedUser.password)
+        const decodedPassword = await bcrypt.compare(password, fetchedUser.password ?? "")
         if(!decodedPassword){
             console.log("password incorrect")
             return res.status(401).json({message: "Invalid Password"})

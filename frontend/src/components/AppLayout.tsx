@@ -35,7 +35,7 @@ export default function AppLayout({ children, isAuthenticated }: AppLayoutProps)
       api.get("/users/me")
         .then((res) => {
           if (res.data?.user) {
-            // console.log(res.data)
+            console.log(res.data)
             setUserData({
               userName: res.data.user.userName,
               avatar: res.data.user.avatar,
@@ -99,9 +99,9 @@ export default function AppLayout({ children, isAuthenticated }: AppLayoutProps)
             {isAuth ? (
               <div className="flex items-center gap-3">
                 <Avatar className="h-9 w-9 cursor-pointer"  key={userData?.avatar || 'fallback'}>
-                  {/* {userData?.avatar ? (
-                    <AvatarImage src={userData?.avatar} alt="User" />
-                  ) : null} */}
+                  {userData?.avatar ? (
+                    <AvatarImage src={`http://localhost:3000${userData?.avatar}`} alt="User" />
+                  ) : null}
                   <AvatarFallback>
                     {userData?.userName?.[0]?.toUpperCase() || "U"}
                   </AvatarFallback>

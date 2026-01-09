@@ -20,6 +20,7 @@ export default function RegisterPage() {
   })
   const [avatarPreview, setAvatarPreview] = useState<string>("")
   const [isLoading, setIsLoading] = useState(false)
+  const [avatarFile, setAvatarFile] = useState<File | null>(null); 
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -29,11 +30,16 @@ export default function RegisterPage() {
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
+      setAvatarFile(file);  
       const reader = new FileReader()
       reader.onloadend = () => {
         setAvatarPreview(reader.result as string)
       }
       reader.readAsDataURL(file)
+    }
+    else {
+      setAvatarFile(null);
+      setAvatarPreview('');
     }
   }
 
@@ -41,16 +47,23 @@ export default function RegisterPage() {
     e.preventDefault()
     setIsLoading(true)
 
-    const finalData = {
-      userName: formData.username,
-      fullName: formData.fullname,
-      email: formData.email,
-      password: formData.password,
-      avatar: avatarPreview || undefined,
+    const submitData = new FormData();
+    submitData.append('userName', formData.username);
+    submitData.append('fullName', formData.fullname);
+    submitData.append('email', formData.email);
+    submitData.append('password', formData.password);
+    
+    // Add avatar file (not data URL)
+    if (avatarFile) {  // You'll store file ref, see below
+      submitData.append('avatar', avatarFile);
     }
     
     try {
-      const res = await api.post("/users/register", finalData)
+      const res = await api.post("/users/register", submitData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
       if (res.data?.success === true && res.data?.accessToken) {
         setAccessToken(res.data.accessToken)
         toast.success("Account created! Redirecting you to your dashboard...")
