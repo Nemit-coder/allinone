@@ -32,6 +32,10 @@ export default function AppLayout({ children, isAuthenticated }: AppLayoutProps)
       window.location.href = "/signin"
     }
   }
+
+  const locateProfile = () => {
+    window.location.href = "/profile"
+  }
   
   // Check token directly to ensure accurate auth state
   const token = getAccessToken()
@@ -65,7 +69,7 @@ export default function AppLayout({ children, isAuthenticated }: AppLayoutProps)
     <div className="min-h-screen bg-background">
       {/* Top Navigation Bar */}
       <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center justify-between">
+        <div className="container flex h-16 items-center justify-between container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex items-center gap-8">
             <Link to={isAuthenticated ? "/dashboard" : "/"} className="flex items-center gap-2">
               <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold text-lg">
@@ -120,13 +124,13 @@ export default function AppLayout({ children, isAuthenticated }: AppLayoutProps)
                 <DropdownMenuContent align="end" className="w-56">
                   <DropdownMenuLabel>My Account</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <div className="px-2 py-1.5 text-sm text-muted-foreground">
-                    {userData?.email || "No email available"}
-                  </div>
+                   <DropdownMenuItem onClick={locateProfile}>
+                    <span>Profile</span>
+                  </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
                     <LogOut className="mr-2 h-4 w-4" />
-                    <span>Log out</span>
+                    <span className="text-red-700">Log out</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

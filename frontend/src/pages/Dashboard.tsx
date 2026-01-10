@@ -14,7 +14,8 @@ interface DashboardProps {
 
 
 export default function Dashboard({ isAuthenticated }: DashboardProps) {
-  const [username, setUsername] = useState(null)
+  const [username, setUsername] = useState('')
+  const upper = username?.[0]?.toUpperCase() + username.slice(1)
   useEffect(() => {
     api.get("/users/me")
       .then((res) => {
@@ -26,13 +27,15 @@ export default function Dashboard({ isAuthenticated }: DashboardProps) {
         window.location.href = "/signin"
       })
   }, [])
+
+
   return (
     <AppLayout isAuthenticated={isAuthenticated}>
       <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-            <p className="text-muted-foreground mt-2">Welcome back {username}! Here's your content overview.</p>
+            <p className="text-muted-foreground mt-2">Welcome back {upper}! Here's your content overview.</p>
           </div>
           <Button asChild className="w-full sm:w-auto">
             <Link to="/create">Create Content</Link>
@@ -47,8 +50,8 @@ export default function Dashboard({ isAuthenticated }: DashboardProps) {
               <Eye className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">45,231</div>
-              <p className="text-xs text-muted-foreground">+20.1% from last month</p>
+              <div className="text-2xl font-bold">0</div>
+              <p className="text-xs text-muted-foreground">0% from last month</p>
             </CardContent>
           </Card>
           <Card>
@@ -57,8 +60,8 @@ export default function Dashboard({ isAuthenticated }: DashboardProps) {
               <Video className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">24</div>
-              <p className="text-xs text-muted-foreground">+3 this week</p>
+              <div className="text-2xl font-bold">0</div>
+              <p className="text-xs text-muted-foreground">+0 this week</p>
             </CardContent>
           </Card>
           <Card>
@@ -67,8 +70,8 @@ export default function Dashboard({ isAuthenticated }: DashboardProps) {
               <ImageIcon className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">156</div>
-              <p className="text-xs text-muted-foreground">+12 this week</p>
+              <div className="text-2xl font-bold">0</div>
+              <p className="text-xs text-muted-foreground">+0 this week</p>
             </CardContent>
           </Card>
           <Card>
@@ -77,8 +80,8 @@ export default function Dashboard({ isAuthenticated }: DashboardProps) {
               <FileText className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">32</div>
-              <p className="text-xs text-muted-foreground">+2 this week</p>
+              <div className="text-2xl font-bold">0</div>
+              <p className="text-xs text-muted-foreground">+0 this week</p>
             </CardContent>
           </Card>
         </div>
@@ -121,9 +124,9 @@ export default function Dashboard({ isAuthenticated }: DashboardProps) {
             <CardContent>
               <div className="space-y-4">
                 {[
-                  { type: "Video", title: "Getting Started Tutorial", views: "2.3K", date: "2 hours ago" },
-                  { type: "Blog", title: "Building Modern Web Apps", views: "1.8K", date: "1 day ago" },
-                  { type: "Image", title: "Product Photography", views: "890", date: "2 days ago" },
+                  { type: "Video", title: "Getting Started Tutorial", views: "0K", date: "2 hours ago" },
+                  { type: "Blog", title: "Building Modern Web Apps", views: "0K", date: "1 day ago" },
+                  { type: "Image", title: "Product Photography", views: "0", date: "2 days ago" },
                 ].map((item, i) => (
                   <div key={i} className="flex items-center justify-between border-b pb-3 last:border-0 last:pb-0">
                     <div className="min-w-0 flex-1">
@@ -151,21 +154,21 @@ export default function Dashboard({ isAuthenticated }: DashboardProps) {
                     <TrendingUp className="h-4 w-4 text-green-500" />
                     <span className="text-sm">Engagement Rate</span>
                   </div>
-                  <span className="text-sm font-medium">+12.5%</span>
+                  <span className="text-sm font-medium">0%</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Users className="h-4 w-4 text-blue-500" />
                     <span className="text-sm">New Followers</span>
                   </div>
-                  <span className="text-sm font-medium">+234</span>
+                  <span className="text-sm font-medium">+0</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Eye className="h-4 w-4 text-purple-500" />
                     <span className="text-sm">Avg. View Duration</span>
                   </div>
-                  <span className="text-sm font-medium">3m 42s</span>
+                  <span className="text-sm font-medium">0m 0s</span>
                 </div>
               </div>
             </CardContent>
