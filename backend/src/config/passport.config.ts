@@ -13,30 +13,29 @@ passport.use(
     async (accessToken, refreshToken, profile, done) => {
       try {
         // Check if user already exists
-        let user = await User.findOne({ email: profile.emails?.[0]?.value })
+        let email = profile.emails?.[0]?.value?.toLowerCase();
+        if (!email) {
+          return done(new Error("No email provided by Google"));
+        }
+        let user = await User.findOne({ email });
 
         if (user) {
           // User exists, return it
-          return done(null, user)
+          return done(null, user);
         }
 
         // Create new user from Google profile
-        const email = profile.emails?.[0]?.value?.toLowerCase()
-        if (!email) {
-          return done(new Error("No email provided by Google"), null)
-        }
-
         user = await User.create({
           userName: profile.displayName?.replace(/\s+/g, "").toLowerCase() || `user${Date.now()}`,
           fullName: profile.displayName || "Google User",
           email: email,
           // password is optional for OAuth users
           avatar: profile.photos?.[0]?.value || "https://ui-avatars.com/api/?name=Google User",
-        })
+        });
 
-        return done(null, user)
+        return done(null, user);
       } catch (error: any) {
-        return done(error, null)
+        return done(error)
       }
     }
   )

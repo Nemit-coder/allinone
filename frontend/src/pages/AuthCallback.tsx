@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { useEffect , useRef} from "react"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import { setAccessToken } from "../lib/api"
 import toast from "react-hot-toast"
@@ -6,17 +6,20 @@ import toast from "react-hot-toast"
 export default function AuthCallback() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
+  const hasRun = useRef(false)
 
   useEffect(() => {
+    if (hasRun.current) return
+    hasRun.current = true
     const token = searchParams.get("token")
     
     if (token) {
       setAccessToken(token)
+      navigate("/dashboard", {replace: true})
       toast.success("Login successful! Welcome back!")
-      navigate("/dashboard")
     } else {
       toast.error("Authentication failed. No token received from authentication provider.")
-      navigate("/signin")
+      navigate("/signin", {replace: true})
     }
   }, [searchParams, navigate])
 

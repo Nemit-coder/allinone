@@ -35,7 +35,7 @@ export default function SignIn({ onSignIn }: SignInProps) {
       if (res.data?.success === true && res.data?.accessToken) {
         setAccessToken(res.data.accessToken)
         onSignIn()
-        toast.success("Login successful! Redirecting you to your dashboard...")
+        toast.success("Login successful! Welcome back!")
 
         setTimeout(() => {
           navigate("/dashboard")

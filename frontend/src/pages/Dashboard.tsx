@@ -28,19 +28,19 @@ export default function Dashboard({ isAuthenticated }: DashboardProps) {
   }, [])
   return (
     <AppLayout isAuthenticated={isAuthenticated}>
-      <div className="container py-8 space-y-8">
-        <div className="flex items-center justify-between">
+      <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
             <p className="text-muted-foreground mt-2">Welcome back {username}! Here's your content overview.</p>
           </div>
-          <Button asChild>
+          <Button asChild className="w-full sm:w-auto">
             <Link to="/create">Create Content</Link>
           </Button>
         </div>
 
         {/* Stats Grid */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Views</CardTitle>
@@ -89,7 +89,7 @@ export default function Dashboard({ isAuthenticated }: DashboardProps) {
             <CardTitle>Quick Actions</CardTitle>
             <CardDescription>Create new content or manage existing</CardDescription>
           </CardHeader>
-          <CardContent className="grid gap-4 sm:grid-cols-3">
+          <CardContent className="grid gap-4 grid-cols-1 sm:grid-cols-3">
             <Button variant="outline" className="h-24 flex-col bg-transparent" asChild>
               <Link to="/create/video">
                 <Video className="h-8 w-8 mb-2" />
@@ -112,7 +112,7 @@ export default function Dashboard({ isAuthenticated }: DashboardProps) {
         </Card>
 
         {/* Recent Activity */}
-        <div className="grid gap-4 lg:grid-cols-2">
+        <div className="grid gap-4 grid-cols-1 lg:grid-cols-2">
           <Card>
             <CardHeader>
               <CardTitle>Recent Content</CardTitle>
@@ -125,14 +125,14 @@ export default function Dashboard({ isAuthenticated }: DashboardProps) {
                   { type: "Blog", title: "Building Modern Web Apps", views: "1.8K", date: "1 day ago" },
                   { type: "Image", title: "Product Photography", views: "890", date: "2 days ago" },
                 ].map((item, i) => (
-                  <div key={i} className="flex items-center justify-between border-b pb-3 last:border-0">
-                    <div>
-                      <p className="font-medium">{item.title}</p>
+                  <div key={i} className="flex items-center justify-between border-b pb-3 last:border-0 last:pb-0">
+                    <div className="min-w-0 flex-1">
+                      <p className="font-medium truncate">{item.title}</p>
                       <p className="text-sm text-muted-foreground">
                         {item.type} • {item.date}
                       </p>
                     </div>
-                    <div className="text-sm font-medium">{item.views} views</div>
+                    <div className="text-sm font-medium ml-4 whitespace-nowrap">{item.views} views</div>
                   </div>
                 ))}
               </div>
