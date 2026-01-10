@@ -3,6 +3,14 @@ import { Link, useLocation } from "react-router-dom"
 import { Home, MessageSquare, PlusCircle, Info, LogOut } from "lucide-react"
 import { Button } from "../components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "../components/ui/dropdown-menu"
 import api, { setAccessToken, getAccessToken } from "../lib/api"
 import { useEffect, useState } from "react"
 
@@ -12,7 +20,7 @@ interface AppLayoutProps {
 }
 
 export default function AppLayout({ children, isAuthenticated }: AppLayoutProps) {
-  const [userData, setUserData] = useState<{ userName?: string; avatar?: string } | null>(null)
+  const [userData, setUserData] = useState<{ userName?: string; email?: string; avatar?: string } | null>(null)
   
   const handleLogout = async () => {
     try {
@@ -38,6 +46,7 @@ export default function AppLayout({ children, isAuthenticated }: AppLayoutProps)
             console.log(res.data)
             setUserData({
               userName: res.data.user.userName,
+              email: res.data.user.email,
               avatar: res.data.user.avatar,
             })
           }
@@ -97,24 +106,30 @@ export default function AppLayout({ children, isAuthenticated }: AppLayoutProps)
 
           <div className="flex items-center gap-4">
             {isAuth ? (
-              <div className="flex items-center gap-3">
-                <Avatar className="h-9 w-9 cursor-pointer"  key={userData?.avatar || 'fallback'}>
-                  {userData?.avatar ? (
-                    <AvatarImage src={`http://localhost:3000${userData?.avatar}`} alt="User" />
-                  ) : null}
-                  <AvatarFallback>
-                    {userData?.userName?.[0]?.toUpperCase() || "U"}
-                  </AvatarFallback>
-                </Avatar>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleLogout}
-                >
-                  <LogOut className="h-4 w-4" />
-                </Button>
-
-              </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Avatar className="h-9 w-9 cursor-pointer" key={userData?.avatar || 'fallback'}>
+                    {userData?.avatar ? (
+                      <AvatarImage src={`http://localhost:3000${userData?.avatar}`} alt="User" />
+                    ) : null}
+                    <AvatarFallback>
+                      {userData?.userName?.[0]?.toUpperCase() || "U"}
+                    </AvatarFallback>
+                  </Avatar>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <div className="px-2 py-1.5 text-sm text-muted-foreground">
+                    {userData?.email || "No email available"}
+                  </div>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Log out</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             ) : (
               <div className="flex items-center gap-2">
                 <Button variant="ghost" size="sm" asChild>
