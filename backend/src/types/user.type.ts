@@ -6,5 +6,7 @@ export interface IUser extends Document {
     email: string,
     password?: string, // Optional for OAuth users
     avatar: string,
-    refreshToken?: string
+    refreshToken?: string,
+    resetPasswordCode?: string,
+    resetPasswordExpires?: Date
 }

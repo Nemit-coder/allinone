@@ -32,6 +32,7 @@ passport.use(
           // password is optional for OAuth users
           avatar: profile.photos?.[0]?.value || "https://ui-avatars.com/api/?name=Google User",
         });
+        // console.log(profile)
 
         return done(null, user);
       } catch (error: any) {

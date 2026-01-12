@@ -25,7 +25,13 @@ const userSchema = new mongoose.Schema<IUser>({
     },
     refreshToken: {
         type: String
-    }
+    },
+    resetPasswordCode: {
+        type: String
+    },
+    resetPasswordExpires: {
+        type: Date,
+    },
 })
 
 const User = mongoose.model<IUser>('User', userSchema)
