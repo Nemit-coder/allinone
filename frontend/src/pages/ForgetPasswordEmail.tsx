@@ -6,14 +6,14 @@ import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { Button } from "../components/ui/button"
 import { Input } from "../components/ui/input"
-import { Label } from "../components/ui/label"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../components/ui/card"
-import api, { setAccessToken } from "../lib/api"
+// import { Label } from "../components/ui/label"
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../components/ui/card"
+import api from "../lib/api"
 import toast from "react-hot-toast"
 
 export default function ForgetPasswordEmail() {
   const navigate = useNavigate()
-  const [passwordcode, setpasswordcode] = useState("")
+  const [email, setEmail] = useState("")
   const [isLoading, setIsLoading] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -21,26 +21,26 @@ export default function ForgetPasswordEmail() {
     setIsLoading(true)
 
     const finalData = {
-      passwordcode: passwordcode
+      email: email
     }
 
     try {
-      const res = await api.post("/users/login", finalData)
-      if (res.data?.success === true && res.data?.accessToken) {
+      const res = await api.post("/auth/forgotPassword", finalData)
+      if (res.data?.success === true) {
         // setAccessToken(res.data.accessToken)
         // onSignIn()
-        toast.success("Login successful! Welcome back!")
+        // toast.success("Login successful! Welcome back!")
 
         setTimeout(() => {
-          navigate("/dashboard")
+          navigate("/forget-password")
         }, 500)
       } else {
         toast.error(res.data?.message ?? "Please check your details and try again.")
       }
     } catch (error: any) {
-      console.error("Login error:", error)
       
       let errorMessage = "Unable to sign in. Please try again."
+      console.error("Login error:", errorMessage)
       
       if (error.response) {
         errorMessage = error.response.data?.message || errorMessage
@@ -62,25 +62,23 @@ export default function ForgetPasswordEmail() {
     <div className="container flex items-center justify-center min-h-[calc(100vh-4rem)] py-12">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1 text-center">
-          <CardTitle className="text-3xl font-bold">Password Recovery</CardTitle>
-          <CardDescription>Enter the code send on your email</CardDescription>
+          <CardTitle className="text-3xl font-bold">Enter Your Email</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="code">Code</Label>
               <Input
                 id="code"
                 type="email"
                 placeholder="name@example.com"
-                // value={email}
-                // onChange={(e) => setEmail(e.target.value)}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
               />
             </div>
             <Button type="submit" className="w-full">
-              Sign in
+              Send Code
             </Button>
           </form>
         </CardContent>

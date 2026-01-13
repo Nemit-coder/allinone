@@ -1,8 +1,9 @@
 import { Router } from "express"
 import passport from "passport"
-import { generateAccessToken, generateRefreshToken } from "../utils/token.js"
+import { generateAccessToken, generateRefreshToken } from "../utils/token.ts"
+import {forgotPassword , verifyResetCode,resetPassword } from "../controllers/auth.controller.ts"
 import User from "../models/user.model.js"
-import { refreshAccessToken, logoutUser } from "../controllers/auth.controller.js"
+import { refreshAccessToken, logoutUser } from "../controllers/auth.controller.ts"
 
 const router = Router()
 
@@ -11,6 +12,11 @@ router.post("/refresh", refreshAccessToken)
 
 // Logout
 router.post("/logout", logoutUser)
+
+router.post("/forgotPassword", forgotPassword)
+router.post("/verify-reset-code", verifyResetCode)
+router.post("/reset-password", resetPassword)
+
 
 // STEP 1: redirect to Google
 router.get(
