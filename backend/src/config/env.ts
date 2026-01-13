@@ -17,6 +17,12 @@ export const env: {
   ACCESS_TOKEN_EXPIRY: string;
   GOOGLE_CLIENT_ID: string;
   GOOGLE_CLIENT_SECRET: string;
+  EMAIL_HOST: string;
+  EMAIL_PORT: number;
+  EMAIL_USER: string;
+  EMAIL_PASS: string;
+  EMAIL_FROM: string;
+
 } = {
   MONGO_DB_URL: process.env.MONGO_DB_URL!,
   ACCESS_TOKEN_SECRET: process.env.ACCESS_TOKEN_SECRET!,
@@ -25,4 +31,10 @@ export const env: {
   REFRESH_TOKEN_EXPIRY: process.env.REFRESH_TOKEN_EXPIRY!,
   GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID!,
   GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET!,
+  EMAIL_HOST: process.env.EMAIL_HOST!,
+  EMAIL_PORT: Number(process.env.EMAIL_PORT!),
+  EMAIL_USER: process.env.EMAIL_USER!,
+  EMAIL_PASS: process.env.EMAIL_PASS!,
+  EMAIL_FROM: process.env.EMAIL_FROM!,
+
 };

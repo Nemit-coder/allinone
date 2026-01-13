@@ -141,7 +141,7 @@ export default function SignIn({ onSignIn }: SignInProps) {
               Sign up
             </Link>
           </div>
-           <Link to="/forget-password" className="text-primary hover:underline font-medium">
+           <Link to="/forget-password-email" className="text-primary hover:underline font-medium">
             Forget Password?
             </Link>
           <Link to="/" className="text-muted-foreground hover:text-primary">
