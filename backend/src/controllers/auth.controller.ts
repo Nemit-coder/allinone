@@ -58,6 +58,7 @@ export const logoutUser = async (req: Request, res: Response) => {
   }
 
   const { code, hashedCode } = generateResetCode()
+  console.log(`This is your raw code : ${code}`)
 
   user.resetPasswordCode = hashedCode
   user.resetPasswordExpires = new Date(Date.now() + 10 * 60 * 1000) // 10 min
@@ -131,7 +132,9 @@ export const resetPassword = async (req: Request, res: Response) => {
     return res.status(404).json({ message: "User not found" })
   }
 
-  user.password = await bcrypt.hash(newPassword, 12)
+   const saltRounds = 10
+   const actualSalt = await bcrypt.genSalt(saltRounds)
+  user.password = await bcrypt.hash(newPassword, actualSalt)
   delete user.resetPasswordCode
   delete user.resetPasswordExpires
 

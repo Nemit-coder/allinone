@@ -28,9 +28,11 @@ export default function ForgetPassword() {
       const res = await api.post("/auth/verify-reset-code", finalData)
       const resetToken = res.data.resetToken;
       if (res.data?.success === true) {
-          navigate("/reset-password", {
+          setTimeout(() => {
+            navigate("/reset-password", {
             state: {resetToken},
           })
+          }, 500)
       } else {
         toast.error(res.data?.message ?? "Please check your details and try again.")
       }

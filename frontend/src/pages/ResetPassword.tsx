@@ -28,19 +28,15 @@ export default function ResetPassword() {
     e.preventDefault()
     setIsLoading(true)
 
-    const finalData = {
-      password: password
-    }
-
     try {
-      const res = await api.post("/auth/reset-password", finalData)
+      const res = await api.post("/auth/reset-password", {newPassword: password, resetToken,})
       if (res.data?.success === true) {
           navigate("/signin")
       } else {
         toast.error(res.data?.message ?? "Please check your details and try again.")
       }
     } catch (error: any) {
-      console.error("Login error:", error)
+      console.error("Login error:", error.message)
       
       let errorMessage = "Unable to sign in. Please try again."
       
@@ -76,7 +72,10 @@ export default function ResetPassword() {
                 type="text"
                 placeholder="******"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  console.log(e.target.value)
+                  setPassword(e.target.value)
+                }}
                 required
               />
             </div>
