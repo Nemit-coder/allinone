@@ -2,8 +2,8 @@
 
 import type React from "react"
 
-import { useState } from "react"
-import { Link, useNavigate } from "react-router-dom"
+import { useState , useEffect} from "react"
+import { Link, useNavigate , useLocation} from "react-router-dom"
 import { Button } from "../components/ui/button"
 import { Input } from "../components/ui/input"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../components/ui/card"
@@ -11,26 +11,31 @@ import api from "../lib/api"
 import toast from "react-hot-toast"
 import {Loader} from "../components/ui/Loader"
 
-export default function ForgetPassword() {
+export default function ResetPassword() {
   const navigate = useNavigate()
-  const [code, setCode] = useState("")
+  const location = useLocation()
+  const resetToken = location.state?.resetToken;
+  const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+
+  useEffect(() => {
+    if (!resetToken) {
+      navigate("/forget-password");
+    }
+  }, [resetToken, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
 
     const finalData = {
-      code: code
+      password: password
     }
 
     try {
-      const res = await api.post("/auth/verify-reset-code", finalData)
-      const resetToken = res.data.resetToken;
+      const res = await api.post("/auth/reset-password", finalData)
       if (res.data?.success === true) {
-          navigate("/reset-password", {
-            state: {resetToken},
-          })
+          navigate("/signin")
       } else {
         toast.error(res.data?.message ?? "Please check your details and try again.")
       }
@@ -59,8 +64,8 @@ export default function ForgetPassword() {
     <div className="container flex items-center justify-center min-h-[calc(100vh-4rem)] py-12">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1 text-center">
-          <CardTitle className="text-3xl font-bold">Password Recovery</CardTitle>
-          <CardDescription>Enter the code send on your email</CardDescription>
+          <CardTitle className="text-3xl font-bold">Set New Password</CardTitle>
+          <CardDescription>Enter new secure password</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
 
@@ -70,12 +75,12 @@ export default function ForgetPassword() {
                 id="code"
                 type="text"
                 placeholder="******"
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 required
               />
             </div>
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full" disabled={isLoading}>
               Submit
               {isLoading && <Loader/>}
             </Button>

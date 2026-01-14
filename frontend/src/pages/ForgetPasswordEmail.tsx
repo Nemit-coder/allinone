@@ -6,10 +6,10 @@ import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { Button } from "../components/ui/button"
 import { Input } from "../components/ui/input"
-// import { Label } from "../components/ui/label"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../components/ui/card"
 import api from "../lib/api"
 import toast from "react-hot-toast"
+import {Loader} from "../components/ui/Loader"
 
 export default function ForgetPasswordEmail() {
   const navigate = useNavigate()
@@ -27,19 +27,14 @@ export default function ForgetPasswordEmail() {
     try {
       const res = await api.post("/auth/forgotPassword", finalData)
       if (res.data?.success === true) {
-        // setAccessToken(res.data.accessToken)
-        // onSignIn()
-        // toast.success("Login successful! Welcome back!")
 
-        setTimeout(() => {
           navigate("/forget-password")
-        }, 500)
       } else {
         toast.error(res.data?.message ?? "Please check your details and try again.")
       }
     } catch (error: any) {
       
-      let errorMessage = "Unable to sign in. Please try again."
+      let errorMessage = "Unable to sent mail. Please try again."
       console.error("Login error:", errorMessage)
       
       if (error.response) {
@@ -77,8 +72,9 @@ export default function ForgetPasswordEmail() {
                 required
               />
             </div>
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full" disabled={isLoading}>
               Send Code
+              {isLoading && <Loader/>}
             </Button>
           </form>
         </CardContent>

@@ -6,6 +6,7 @@ import LandingPage from "./pages/LandingPage"
 import SignIn from "./pages/SignIn"
 import ForgetPassword from "./pages/ForgetPassword"
 import ForgetPasswordEmail from "./pages/ForgetPasswordEmail"
+import ResetPassword from "./pages/ResetPassword"
 import Register from "./pages/Register"
 import Dashboard from "./pages/Dashboard"
 import Chat from "./pages/Chat"
@@ -36,6 +37,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/forget-password" element={<ForgetPassword />}/>
         <Route path="/forget-password-email" element={<ForgetPasswordEmail />}/>
+        <Route path="/reset-password" element={<ResetPassword />}/>
         <Route path="/auth/callback" element={<AuthCallback />} />
 
         {/* Dashboard routes - accessible for now */}

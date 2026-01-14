@@ -8,9 +8,10 @@ import { Button } from "../components/ui/button"
 import { Input } from "../components/ui/input"
 import { Label } from "../components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../components/ui/card"
+import {Loader} from "../components/ui/Loader"
 import api, { setAccessToken } from "../lib/api"
 import toast from "react-hot-toast"
-
+// import { Loader2 } from "lucide-react"
 interface SignInProps {
   onSignIn: () => void
 }
@@ -129,8 +130,9 @@ export default function SignIn({ onSignIn }: SignInProps) {
                 required
               />
             </div>
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full" disabled={isLoading}>
               Sign in
+              {isLoading && <Loader/>}
             </Button>
           </form>
         </CardContent>

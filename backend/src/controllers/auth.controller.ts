@@ -83,7 +83,7 @@ export const logoutUser = async (req: Request, res: Response) => {
 
 // Verify Reset Code
 export const verifyResetCode = async (req: Request, res: Response) => {
-  const { email, code } = req.body
+  const { code } = req.body
 
   const hashedCode = crypto
     .createHash("sha256")
@@ -91,7 +91,6 @@ export const verifyResetCode = async (req: Request, res: Response) => {
     .digest("hex")
 
   const user = await User.findOne({
-    email,
     resetPasswordCode: hashedCode,
     resetPasswordExpires: { $gt: new Date() },
   })
@@ -100,26 +99,36 @@ export const verifyResetCode = async (req: Request, res: Response) => {
     return res.status(400).json({ message: "Invalid or expired code" })
   }
 
-  res.json({ message: "Code verified successfully" })
+  const resetToken = jwt.sign(
+    { userId: user._id },
+    "fsdfsdf",
+    { expiresIn: "10m" }
+  )
+  console.log(resetToken)
+
+  res.json({
+    success: true,
+    resetToken,
+     message: "Code verified successfully"
+     })
 }
 
 // Reset Password
 export const resetPassword = async (req: Request, res: Response) => {
-  const { email, code, newPassword } = req.body
+  const { newPassword , resetToken} = req.body
+  console.log(newPassword, resetToken)
+   let decoded: any
 
-  const hashedCode = crypto
-    .createHash("sha256")
-    .update(code)
-    .digest("hex")
+  try {
+    decoded = jwt.verify(resetToken, "fsdfsdf")
+  } catch {
+    return res.status(401).json({ message: "Invalid or expired reset token" })
+  }
 
-  const user = await User.findOne({
-    email,
-    resetPasswordCode: hashedCode,
-    resetPasswordExpires: { $gt: new Date() },
-  })
+   const user = await User.findById(decoded.userId)
 
   if (!user) {
-    return res.status(400).json({ message: "Invalid or expired code" })
+    return res.status(404).json({ message: "User not found" })
   }
 
   user.password = await bcrypt.hash(newPassword, 12)
@@ -128,5 +137,8 @@ export const resetPassword = async (req: Request, res: Response) => {
 
   await user.save()
 
-  res.json({ message: "Password reset successful" })
+  res.json({
+    success: true,
+     message: "Password reset successful"
+     })
 }

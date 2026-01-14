@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar"
 import api, { setAccessToken } from "../lib/api"
 import toast from "react-hot-toast"
+import {Loader} from "../components/ui/Loader"
 
 export default function RegisterPage() {
   const navigate = useNavigate()
@@ -181,8 +182,9 @@ export default function RegisterPage() {
                 />
               </div>
 
-              <Button type="submit" className="w-full" isLoading={isLoading}>
+              <Button type="submit" className="w-full" disabled={isLoading}>
                 Create account
+                {isLoading && <Loader/>}
               </Button>
             </form>
 
