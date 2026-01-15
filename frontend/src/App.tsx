@@ -18,6 +18,7 @@ import About from "./pages/About"
 import AuthCallback from "./pages/AuthCallback"
 import { Toaster } from "react-hot-toast"
 import ProtectedRoute from "./components/ProtectedRoute"
+import PublicRoute from "./components/PublicRoute"
 import { getAccessToken } from "./lib/api"
 
 function App() {
@@ -33,13 +34,39 @@ function App() {
     <>
       <Routes>
         <Route path="/" element={<LandingPage />} />
-        <Route path="/signin" element={<SignIn onSignIn={() => setIsAuthenticated(true)} />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/forget-password" element={<ForgetPassword />}/>
+        {/* <Route path="/signin" element={<SignIn onSignIn={() => setIsAuthenticated(true)} />} /> */}
+        {/* <Route path="/register" element={<Register />} />
+        <Route path="/forget-password" element={<ForgetPassword />}/> */}
         <Route path="/forget-password-email" element={<ForgetPasswordEmail />}/>
         <Route path="/reset-password" element={<ResetPassword />}/>
         <Route path="/auth/callback" element={<AuthCallback />} />
 
+      <Route
+        path="/signin"
+        element={
+          <PublicRoute>
+            <SignIn onSignIn={() => setIsAuthenticated(true)} />
+          </PublicRoute>
+        }
+      />
+
+       <Route
+        path="/register"
+        element={
+          <PublicRoute>
+            <Register />
+          </PublicRoute>
+        }
+      />
+
+      <Route
+        path="/forget-password"
+        element={
+          <PublicRoute>
+            <ForgetPassword />
+          </PublicRoute>
+        }
+      />
         {/* Dashboard routes - accessible for now */}
           <Route
             path="/dashboard"

@@ -19,7 +19,8 @@ app.use(cors({
     credentials: true
   }))
 
-  app.use((req, res, next) => { console.log(`${req.method} ${req.path}`); next(); });
+// User Logs  
+// app.use((req, res, next) => { console.log(`${req.method} ${req.path}`); next(); });
 
 
 
