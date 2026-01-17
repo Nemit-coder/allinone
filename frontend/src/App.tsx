@@ -8,6 +8,7 @@ import ForgetPassword from "./pages/ForgetPassword"
 import ForgetPasswordEmail from "./pages/ForgetPasswordEmail"
 import ResetPassword from "./pages/ResetPassword"
 import Register from "./pages/Register"
+import Profile from "./pages/Profile"
 import Dashboard from "./pages/Dashboard"
 import Chat from "./pages/Chat"
 import CreateContent from "./pages/CreateContent"
@@ -34,39 +35,37 @@ function App() {
     <>
       <Routes>
         <Route path="/" element={<LandingPage />} />
-        {/* <Route path="/signin" element={<SignIn onSignIn={() => setIsAuthenticated(true)} />} /> */}
-        {/* <Route path="/register" element={<Register />} />
-        <Route path="/forget-password" element={<ForgetPassword />}/> */}
         <Route path="/forget-password-email" element={<ForgetPasswordEmail />}/>
         <Route path="/reset-password" element={<ResetPassword />}/>
         <Route path="/auth/callback" element={<AuthCallback />} />
+        <Route path="/profile" element={<Profile/>} />
+        {/* Public Routes */}
+        <Route
+          path="/signin"
+          element={
+            <PublicRoute>
+              <SignIn onSignIn={() => setIsAuthenticated(true)} />
+            </PublicRoute>
+          }
+        />
 
-      <Route
-        path="/signin"
-        element={
-          <PublicRoute>
-            <SignIn onSignIn={() => setIsAuthenticated(true)} />
-          </PublicRoute>
-        }
-      />
+        <Route
+          path="/register"
+          element={
+            <PublicRoute>
+              <Register />
+            </PublicRoute>
+          }
+        />
 
-       <Route
-        path="/register"
-        element={
-          <PublicRoute>
-            <Register />
-          </PublicRoute>
-        }
-      />
-
-      <Route
-        path="/forget-password"
-        element={
-          <PublicRoute>
-            <ForgetPassword />
-          </PublicRoute>
-        }
-      />
+        <Route
+          path="/forget-password"
+          element={
+            <PublicRoute>
+              <ForgetPassword />
+            </PublicRoute>
+          }
+        />
         {/* Dashboard routes - accessible for now */}
           <Route
             path="/dashboard"
