@@ -10,7 +10,7 @@ interface ProfileProps {
 export default function Profile({isAuthenticated} : ProfileProps){
     return(
         <AppLayout isAuthenticated={isAuthenticated}>
-        <h1>This is Profile</h1>
+        <h1 className="m-6">This is Profile</h1>
         </AppLayout>
     )
 }
