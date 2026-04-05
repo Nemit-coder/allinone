@@ -19,8 +19,8 @@ export default function Dashboard({ isAuthenticated }: DashboardProps) {
   useEffect(() => {
     api.get("/users/me")
       .then((res) => {
-        // console.log("Userfd :", res.data.user.userName)
-        // console.log("User user :", res.data)
+        // // console.log("Userfd :", res.data.user.userName)
+        // // console.log("User user :", res.data)
         setUsername(res.data.user.userName)
       })
       .catch(() => {

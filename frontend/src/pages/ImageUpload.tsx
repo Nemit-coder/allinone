@@ -38,7 +38,7 @@ export default function ImageUpload({ isAuthenticated }: ImageUploadProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    console.log("[v0] Image upload:", { title, description, images })
+    // console.log("[v0] Image upload:", { title, description, images })
     alert("Images uploaded successfully!")
   }
 

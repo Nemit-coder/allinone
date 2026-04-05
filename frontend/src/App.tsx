@@ -38,7 +38,14 @@ function App() {
         <Route path="/forget-password-email" element={<ForgetPasswordEmail />}/>
         <Route path="/reset-password" element={<ResetPassword />}/>
         <Route path="/auth/callback" element={<AuthCallback />} />
-        <Route path="/profile" element={<Profile/>} />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile isAuthenticated={isAuthenticated} />
+            </ProtectedRoute>
+          }
+        />
         {/* Public Routes */}
         <Route
           path="/signin"

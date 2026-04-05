@@ -23,7 +23,7 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
     if (err) return res.status(403).json({ message: "Token expired" })
 
     const accessToken = generateAccessToken(decoded.id)
-    console.log("access token generated again")
+    // console.log("access token generated again")
     res.json({ accessToken })
   })
 }
@@ -58,7 +58,7 @@ export const logoutUser = async (req: Request, res: Response) => {
   }
 
   const { code, hashedCode } = generateResetCode()
-  console.log(`This is your raw code : ${code}`)
+  // // console.log(`This is your raw code : ${code}`)
 
   user.resetPasswordCode = hashedCode
   user.resetPasswordExpires = new Date(Date.now() + 10 * 60 * 1000) // 10 min
@@ -105,7 +105,7 @@ export const verifyResetCode = async (req: Request, res: Response) => {
     "fsdfsdf",
     { expiresIn: "10m" }
   )
-  console.log(resetToken)
+  // // console.log(resetToken)
 
   res.json({
     success: true,
@@ -117,7 +117,7 @@ export const verifyResetCode = async (req: Request, res: Response) => {
 // Reset Password
 export const resetPassword = async (req: Request, res: Response) => {
   const { newPassword , resetToken} = req.body
-  console.log(newPassword, resetToken)
+  // // console.log(newPassword, resetToken)
    let decoded: any
 
   try {

@@ -635,7 +635,7 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
 
     // 4. Generate new access token
     const accessToken = generateAccessToken(decoded.id)
-    console.log("access token generated again")
+    // console.log("access token generated again")
     
     // 5. Return new access token
     res.json({ accessToken })
@@ -727,7 +727,7 @@ export const logoutUser = async (req: Request, res: Response) => {
 ```typescript
 useEffect(() => {
   api.get("/users/me")  // Fetch current user data
-    .then(res => console.log("User:", res.data))
+    .then(res => // console.log("User:", res.data))
     .catch(() => {
       window.location.href = "/signin"  // Redirect if unauthorized
     })

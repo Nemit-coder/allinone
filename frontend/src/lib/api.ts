@@ -2,12 +2,25 @@ import axios from "axios"
 
 const TOKEN_KEY = "accessToken"
 
-// Initialize token from localStorage
 const getStoredToken = (): string | null => {
   if (typeof window !== "undefined") {
     return localStorage.getItem(TOKEN_KEY)
   }
   return null
+}
+
+const isValidToken = (token: string | null): boolean => {
+  if (!token || typeof window === "undefined") return false
+  const parts = token.split('.')
+  if (parts.length !== 3) return false
+
+  try {
+    const payload = JSON.parse(window.atob(parts[1]))
+    if (typeof payload.exp !== "number") return false
+    return payload.exp * 1000 > Date.now()
+  } catch {
+    return false
+  }
 }
 
 let accessToken: string | null = getStoredToken()
@@ -24,8 +37,18 @@ export const setAccessToken = (token: string | null) => {
 }
 
 export const getAccessToken = (): string | null => {
-  // Return in-memory token if available, otherwise check localStorage
-  return accessToken || getStoredToken()
+  if (isValidToken(accessToken)) {
+    return accessToken
+  }
+
+  const storedToken = getStoredToken()
+  if (isValidToken(storedToken)) {
+    accessToken = storedToken
+    return storedToken
+  }
+
+  setAccessToken(null)
+  return null
 }
 
 const api = axios.create({

@@ -40,7 +40,7 @@ export default function VideoUpload({ isAuthenticated }: VideoUploadProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    console.log("[v0] Video upload:", { title, description, videoFile })
+    // console.log("[v0] Video upload:", { title, description, videoFile })
     // Handle video upload logic here
     alert("Video uploaded successfully!")
   }

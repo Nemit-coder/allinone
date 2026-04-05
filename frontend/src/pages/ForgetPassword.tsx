@@ -43,10 +43,10 @@ export default function ForgetPassword() {
       
       if (error.response) {
         errorMessage = error.response.data?.message || errorMessage
-        console.log(error.response)
+        // console.log(error.response)
       } else if (error.request) {
         errorMessage = "No response from server. Please check if the backend is running."
-        console.log(error.request)
+        // console.log(error.request)
       } else {
         errorMessage = error.message || errorMessage
       }

@@ -47,7 +47,7 @@ export default function AppLayout({ children, isAuthenticated }: AppLayoutProps)
       api.get("/users/me")
         .then((res) => {
           if (res.data?.user) {
-            console.log(res.data)
+            // console.log(res.data)
             setUserData({
               userName: res.data.user.userName,
               email: res.data.user.email,

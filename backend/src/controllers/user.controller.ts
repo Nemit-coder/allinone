@@ -8,7 +8,7 @@ import { generateAccessToken, generateRefreshToken } from "../utils/token.ts"
  /* ===== Register ===== */
 const registerUser = async (req : Request, res : Response) => {
     try {        
-        const {userName, fullName, email, password, avatar} = req.body
+        const {userName, fullName, email, password} = req.body
         let avatarUrl = undefined;
         if (req.file) {
           avatarUrl = `/uploads/avatars/${req.file.filename}`;
@@ -39,6 +39,8 @@ const registerUser = async (req : Request, res : Response) => {
         }
 
         // ==> Checking if user already exist
+        const normalizedEmail = email.toLowerCase()
+
         const fetchedUser = await User.findOne({email})
         if(fetchedUser) {
             return res.status(409).json({
@@ -51,7 +53,7 @@ const registerUser = async (req : Request, res : Response) => {
         const saltRounds = 10
         const actualSalt = await bcrypt.genSalt(saltRounds)
         const passwordHash = await bcrypt.hash(password, actualSalt)
-        const normalizedEmail = email.toLowerCase()
+        
 
         // ==> Creating final user
         const createUser = await User.create({
@@ -83,8 +85,9 @@ const registerUser = async (req : Request, res : Response) => {
             sameSite: "strict",
             maxAge: 7 * 24 * 60 * 60 * 1000
         })
-
-        res.status(200).json({ 
+        
+        // console.log(`User created successfully : ${createUser.userName}`)
+        return res.status(200).json({ 
             success: true,
             message: 'User Created Successfully',
             accessToken: accessToken,
@@ -94,9 +97,8 @@ const registerUser = async (req : Request, res : Response) => {
                 avatar: createUser.avatar
             }
         })
-        console.log(`User created successfully : ${createUser.userName}`)
     } catch (error : any) {
-        console.log(`Server Error : ${error.message}`)
+        // console.log(`Server Error : ${error.message}`)
         res.status(500).json({ message: `Server Error : ${error.message}` })
     }
 }
@@ -105,6 +107,9 @@ const registerUser = async (req : Request, res : Response) => {
 const getCurrentUser = async (req: Request, res: Response) => {
     try {
         const userId = req.user!.id
+        if (!userId) {
+        return res.status(401).json({ message: "Authentication required" })
+        }
         const user = await User.findById(userId).select('-password -refreshToken')
         
         if (!user) {
@@ -119,7 +124,7 @@ const getCurrentUser = async (req: Request, res: Response) => {
             user
         })
     } catch (error: any) {
-        console.log(`Server Error : ${error.message}`)
+        // console.log(`Server Error : ${error.message}`)
         res.status(500).json({ message: `Server Error : ${error.message}` })
     }
 }
@@ -130,7 +135,7 @@ const getUser = async (req : Request, res: Response) => {
         // ==> Fetching user
         const fetchedUser = await User.find()
         if(!fetchedUser){
-            console.log('Error finding users')
+            // console.log('Error finding users')
             return res.json({
                 success: false,
                 message: "Error finding users"
@@ -142,7 +147,7 @@ const getUser = async (req : Request, res: Response) => {
             users : fetchedUser
         })
     } catch (error: any) {
-        console.log(`Server Error : ${error.message}`)
+        // console.log(`Server Error : ${error.message}`)
         res.status(500).json({ message: `Server Error : ${error.message}` })
     }
 }
@@ -153,14 +158,14 @@ const loginUser = async (req: Request, res : Response) => {
         const {email, password} = req.body
         const fetchedUser = await User.findOne({email})
         if(!fetchedUser) {
-            console.log("User not found")
+            // console.log("User not found")
             return res.status(404).json({message: "User not found"})
         }
 
         // ==> Decoding password
         const decodedPassword = await bcrypt.compare(password, fetchedUser.password ?? "")
         if(!decodedPassword){
-            console.log("password incorrect")
+            // console.log("password incorrect")
             return res.status(401).json({message: "Invalid Password"})
         }
 
@@ -191,7 +196,7 @@ const loginUser = async (req: Request, res : Response) => {
             user: fetchedUser
         });
     } catch (error : any) {
-        console.log(error.message)
+        // console.log(error.message)
         res.status(500).json({message : `Server Error : ${error.message}`})
     }
 }
@@ -203,14 +208,14 @@ const updateUser = async (req: Request, res : Response) => {
         const {email, password, userName, fullName, avatar} = req.body
          const updateData: any = {}
 
-         // ==> Checking if Fields are given for updation
+         // ==> Checking if Fields are given for update
         if (email) updateData.email = email.toLowerCase()
         if (userName) updateData.userName = userName
         if (fullName) updateData.fullName = fullName
         if (avatar) updateData.avatar = avatar
 
         if (password) {
-            console.log(password)
+            // console.log(password)
         updateData.password = await bcrypt.hash(password, 10)
         }
 
@@ -241,7 +246,7 @@ const updateUser = async (req: Request, res : Response) => {
         })
 
     } catch (error : any) {
-        console.log(error.message)
+        // console.log(error.message)
         res.status(500).json({
             success: false,
             message : `Server Error : ${error.message}`})
@@ -266,7 +271,7 @@ const deleteUser = async (req: Request, res: Response) => {
             message: "User was deleted successfully"
         })
     } catch (error: any) {
-        console.log(error.message)
+        // console.log(error.message)
         res.status(500).json({
             success: true,
             message : `Server Error : ${error.message}`})

@@ -23,7 +23,7 @@ export default function BlogUpload({ isAuthenticated }: BlogUploadProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    console.log("[v0] Blog post:", { title, content, tags })
+    // console.log("[v0] Blog post:", { title, content, tags })
     alert("Blog post published successfully!")
   }
 

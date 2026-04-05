@@ -38,7 +38,7 @@ export default function LandingPage() {
             Powerful tools designed for modern content creators
           </p>
         </div>
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid ml-16 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {[
             {
               icon: Video,
@@ -86,7 +86,7 @@ export default function LandingPage() {
       {/* Stats Section */}
       <section className="border-y bg-muted/20">
         <div className="container py-16">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-center">
             {[
               { label: "Active Users", value: "50K+" },
               { label: "Content Pieces", value: "1M+" },
