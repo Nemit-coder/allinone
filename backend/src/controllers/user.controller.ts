@@ -202,22 +202,26 @@ const loginUser = async (req: Request, res : Response) => {
 }
 
 /* ===== Update ===== */
-const updateUser = async (req: Request, res : Response) => {
+const updateUserProfile = async (req: Request, res : Response) => {
     try {
         const userId = req.user!.id
-        const {email, password, userName, fullName, avatar} = req.body
+        const {email, userName, fullName} = req.body
          const updateData: any = {}
+         
 
          // ==> Checking if Fields are given for update
         if (email) updateData.email = email.toLowerCase()
         if (userName) updateData.userName = userName
         if (fullName) updateData.fullName = fullName
-        if (avatar) updateData.avatar = avatar
 
-        if (password) {
-            // console.log(password)
-        updateData.password = await bcrypt.hash(password, 10)
+         if (req.file) {
+            updateData.avatar = `/uploads/avatars/${req.file.filename}`
         }
+
+        // if (password) {
+        //     // console.log(password)
+        // updateData.password = await bcrypt.hash(password, 10)
+        // }
 
         if (Object.keys(updateData).length === 0) {
             return res.status(400).json({
@@ -241,7 +245,7 @@ const updateUser = async (req: Request, res : Response) => {
 
         res.status(200).json({
             success: true,
-            message: " User has been updated successfully",
+            message: " User Profile has been updated successfully",
             user: updatedUser
         })
 
@@ -278,11 +282,12 @@ const deleteUser = async (req: Request, res: Response) => {
     }
 }
 
+
 export {
     registerUser,
     loginUser,
     getUser,
     getCurrentUser,
-    updateUser,
+    updateUserProfile,
     deleteUser
 }

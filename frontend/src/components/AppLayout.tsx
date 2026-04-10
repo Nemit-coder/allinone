@@ -69,7 +69,7 @@ export default function AppLayout({ children, isAuthenticated }: AppLayoutProps)
     <div className="min-h-screen bg-background">
       {/* Top Navigation Bar */}
       <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center justify-between container max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="container flex h-16 items-center justify-between container max-w-8xl mx-auto px-4 sm:px-6 mx-2 px-2 lg:px-2 py-8">
           <div className="flex items-center gap-x-80">
             <Link to={isAuthenticated ? "/dashboard" : "/"} className="flex items-center gap-2">
               <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold text-lg">
@@ -82,25 +82,25 @@ export default function AppLayout({ children, isAuthenticated }: AppLayoutProps)
               <div className="hidden md:flex items-center gap-1">
                 <Button variant={isActive("/dashboard") ? "secondary" : "ghost"} size="sm" asChild>
                   <Link to="/dashboard">
-                    <Home className="mr-2 h-4 w-4" />
+                    <Home className="h-4 w-4" />
                     Dashboard
                   </Link>
                 </Button>
                 <Button variant={isActive("/create") ? "secondary" : "ghost"} size="sm" asChild>
                   <Link to="/create">
-                    <PlusCircle className="mr-2 h-4 w-4" />
+                    <PlusCircle className="h-4 w-4" />
                     Create
                   </Link>
                 </Button>
                 <Button variant={isActive("/chat") ? "secondary" : "ghost"} size="sm" asChild>
                   <Link to="/chat">
-                    <MessageSquare className="mr-2 h-4 w-4" />
+                    <MessageSquare className="h-4 w-4" />
                     Chat
                   </Link>
                 </Button>
                 <Button variant={isActive("/about") ? "secondary" : "ghost"} size="sm" asChild>
                   <Link to="/about">
-                    <Info className="mr-2 h-4 w-4" />
+                    <Info className="h-4 w-4" />
                     About
                   </Link>
                 </Button>
