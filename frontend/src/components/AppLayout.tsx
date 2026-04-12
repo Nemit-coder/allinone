@@ -36,6 +36,10 @@ export default function AppLayout({ children, isAuthenticated }: AppLayoutProps)
   const locateProfile = () => {
     window.location.href = "/profile"
   }
+
+  const locateSettings = () => {
+    window.location.href = '/settings'
+  }
   
   // Check token directly to ensure accurate auth state
   const token = getAccessToken()
@@ -126,6 +130,10 @@ export default function AppLayout({ children, isAuthenticated }: AppLayoutProps)
                   <DropdownMenuSeparator />
                    <DropdownMenuItem onClick={locateProfile}>
                     <span>Profile</span>
+                  </DropdownMenuItem>
+
+                   <DropdownMenuItem onClick={locateSettings}>
+                    <span>Settings</span>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">

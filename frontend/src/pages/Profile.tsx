@@ -21,7 +21,7 @@ export default function Profile({isAuthenticated} : ProfileProps){
       fullname: "",
       email: "",
       avatar : "",
-      // password: ""
+      password: ""
     })
     const [avatarPreview, setAvatarPreview] = useState<string>("")
     const [avatarFile, setAvatarFile] = useState<File | null>(null);
@@ -51,7 +51,7 @@ export default function Profile({isAuthenticated} : ProfileProps){
     }
 
     const token = getAccessToken()
-    const isAuth = isAuthenticated || !!token
+    const isAuth = isAuthenticated || !!token   
 
     const handleSubmit = async (e : React.FormEvent) => {
       e.preventDefault()
@@ -61,10 +61,12 @@ export default function Profile({isAuthenticated} : ProfileProps){
       submitData.append('userName', formData.username);
       submitData.append('fullName', formData.fullname);
       submitData.append('email', formData.email);
-      // submitData.append('password', formData.password)
 
       if (avatarFile) {
         submitData.append('avatar', avatarFile)
+      }
+      if (formData.password.trim() !== "") {
+        submitData.append('password', formData.password)
       }
 
       try{
@@ -107,11 +109,11 @@ export default function Profile({isAuthenticated} : ProfileProps){
                 const user = res.data.user
                 setUserData(user)
                 setFormData({
-                  username: res.data.user.userName,
-                  email: res.data.user.email,
-                  fullname : res.data.user.fullName,
-                  avatar: res.data.user.avatar
-                  // password: ""
+                  username: user.userName,
+                  email: user.email,
+                  fullname : user.fullName,
+                  avatar: user.avatar,
+                  password: "",
                 })
               }
             })
@@ -191,6 +193,19 @@ export default function Profile({isAuthenticated} : ProfileProps){
                     value={formData?.fullname}
                     onChange={handleInputChange}
                     required
+                    disabled={isLoading} 
+                    />
+                </div>
+
+                <div className="space-y-2 mb-3">
+                    <Label htmlFor="password">Password</Label>
+                    <Input 
+                    id="password"
+                    name="password"
+                    type="password"
+                    placeholder="*******"
+                    value={formData?.password}
+                    onChange={handleInputChange}
                     disabled={isLoading} 
                     />
                 </div>

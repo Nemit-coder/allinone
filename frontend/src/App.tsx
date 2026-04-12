@@ -9,6 +9,7 @@ import ForgetPasswordEmail from "./pages/ForgetPasswordEmail"
 import ResetPassword from "./pages/ResetPassword"
 import Register from "./pages/Register"
 import Profile from "./pages/Profile"
+import Settings from "./pages/Settings"
 import Dashboard from "./pages/Dashboard"
 import Chat from "./pages/Chat"
 import CreateContent from "./pages/CreateContent"
@@ -43,6 +44,15 @@ function App() {
           element={
             <ProtectedRoute>
               <Profile isAuthenticated={isAuthenticated} />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/settings"
+          element={
+            <ProtectedRoute>
+              <Settings isAuthenticated={isAuthenticated} />
             </ProtectedRoute>
           }
         />

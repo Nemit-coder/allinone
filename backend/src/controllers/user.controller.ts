@@ -110,7 +110,7 @@ const getCurrentUser = async (req: Request, res: Response) => {
         if (!userId) {
         return res.status(401).json({ message: "Authentication required" })
         }
-        const user = await User.findById(userId).select('-password -refreshToken')
+        const user = await User.findById(userId).select('-refreshToken')
         
         if (!user) {
             return res.status(404).json({
@@ -205,7 +205,7 @@ const loginUser = async (req: Request, res : Response) => {
 const updateUserProfile = async (req: Request, res : Response) => {
     try {
         const userId = req.user!.id
-        const {email, userName, fullName} = req.body
+        const {email, userName, fullName , password} = req.body
          const updateData: any = {}
          
 
@@ -213,16 +213,15 @@ const updateUserProfile = async (req: Request, res : Response) => {
         if (email) updateData.email = email.toLowerCase()
         if (userName) updateData.userName = userName
         if (fullName) updateData.fullName = fullName
+        if (password) updateData.password = password
 
          if (req.file) {
             updateData.avatar = `/uploads/avatars/${req.file.filename}`
         }
 
-        // if (password) {
-        //     // console.log(password)
-        // updateData.password = await bcrypt.hash(password, 10)
-        // }
-
+       if (password && password.trim() !== "") {
+          updateData.password = await bcrypt.hash(password, 10)
+       }
         if (Object.keys(updateData).length === 0) {
             return res.status(400).json({
                 success: false,
@@ -234,7 +233,7 @@ const updateUserProfile = async (req: Request, res : Response) => {
             userId,
             { $set: updateData },
             { new: true, runValidators: true }
-        ).select('-password -refreshToken')
+        ).select('-refreshToken')
 
         if (!updatedUser) {
             return res.status(404).json({
