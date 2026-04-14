@@ -16,12 +16,19 @@ interface ImageUploadProps {
 }
 
 export default function ImageUpload({ isAuthenticated }: ImageUploadProps) {
+  const [formData, setFormData] = useState({
+    uploadedImage: "",
+    imageTitle: "",
+    imageDescription: ""
+  })
+  const [isLoading, setIsLoading] = useState(false)
   const [images, setImages] = useState<{ file: File; preview: string }[]>([])
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || [])
+    console.log(files)
     const newImages = files.map((file) => ({
       file,
       preview: URL.createObjectURL(file),
@@ -38,8 +45,22 @@ export default function ImageUpload({ isAuthenticated }: ImageUploadProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    // console.log("[v0] Image upload:", { title, description, images })
-    alert("Images uploaded successfully!")
+    setIsLoading(true)
+
+    const submitData = new FormData()
+    submitData.append('imageTitle', formData.imageTitle);
+    submitData.append('imageDescription', formData.imageDescription)
+
+    if(images){
+      submitData.append('uploadedImage', formData.uploadedImage)
+    }
+
+    // calling the api
+    try {
+      
+    } catch (error) {
+      
+    }
   }
 
   return (
@@ -100,10 +121,11 @@ export default function ImageUpload({ isAuthenticated }: ImageUploadProps) {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="title">Gallery Title</Label>
+                <Label htmlFor="title">Image Title</Label>
                 <Input
-                  id="title"
-                  placeholder="Enter gallery title"
+                  id="imagetitle"
+                  name="imagetitle"
+                  placeholder="Enter image title"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   required
@@ -113,7 +135,8 @@ export default function ImageUpload({ isAuthenticated }: ImageUploadProps) {
               <div className="space-y-2">
                 <Label htmlFor="description">Description</Label>
                 <textarea
-                  id="description"
+                  id="imagedescription"
+                  name="imagedescription"
                   placeholder="Describe your gallery..."
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}

@@ -106,7 +106,7 @@ export default function Chat({ isAuthenticated }: ChatProps) {
 
   return (
     <AppLayout isAuthenticated={isAuthenticated}>
-      <div className="container max-w-7xl py-6">
+      <div className="container max-w-7xl mx-auto py-6">
         <div className="grid lg:grid-cols-[320px_1fr] gap-4 h-[calc(100vh-12rem)]">
           {/* Users Sidebar */}
           <div className="flex flex-col border rounded-lg bg-card overflow-hidden">

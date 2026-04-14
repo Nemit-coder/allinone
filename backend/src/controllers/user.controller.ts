@@ -11,7 +11,7 @@ const registerUser = async (req : Request, res : Response) => {
         const {userName, fullName, email, password} = req.body
         let avatarUrl = undefined;
         if (req.file) {
-          avatarUrl = `/uploads/avatars/${req.file.filename}`;
+          avatarUrl = `/uploads/avatars/${req.user?.id}/${req.file.filename}`;
         }
         // ==> Validating Required Fields
         if (!email || !password || !userName || !fullName) {
@@ -216,7 +216,8 @@ const updateUserProfile = async (req: Request, res : Response) => {
         if (password) updateData.password = password
 
          if (req.file) {
-            updateData.avatar = `/uploads/avatars/${req.file.filename}`
+            console.log(req.file.filename)
+            updateData.avatar = `/uploads/avatars/${req.user?.id}/${req.file.filename}`
         }
 
        if (password && password.trim() !== "") {

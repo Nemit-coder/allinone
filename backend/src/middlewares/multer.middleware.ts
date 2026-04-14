@@ -1,6 +1,7 @@
 import multer from 'multer';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import fs from 'fs'
 
 // Get __dirname in ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -8,11 +9,20 @@ const __dirname = path.dirname(__filename);
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'public/uploads/avatars/');  // Local folder path
+    const userId = req.user?.id;
+
+    const userDir = `public/uploads/avatars/${userId}`
+      fs.mkdirSync(userDir, {recursive: true})
+    cb(null, userDir); 
   },
+
   filename: (req, file, cb) => {
-    const uniqueName = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, uniqueName + path.extname(file.originalname));
+    const userId = req.user?.id;
+
+    // Overwritting the avatar file
+    const filename = `${userId}${path.extname(file.originalname)}`
+    // const uniqueName = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, filename);
   }
 });
 
