@@ -10,6 +10,8 @@ import { Input } from "../components/ui/input"
 import { Label } from "../components/ui/label"
 import { Link } from "react-router-dom"
 import { Upload, X, ArrowLeft } from "lucide-react"
+import api from "../lib/api"
+import toast from "react-hot-toast"
 
 interface ImageUploadProps {
   isAuthenticated: boolean
@@ -23,8 +25,11 @@ export default function ImageUpload({ isAuthenticated }: ImageUploadProps) {
   })
   const [isLoading, setIsLoading] = useState(false)
   const [images, setImages] = useState<{ file: File; preview: string }[]>([])
-  const [title, setTitle] = useState("")
-  const [description, setDescription] = useState("")
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target
+    setFormData((prev) => ({ ...prev, [name]: value }))
+  }
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || [])
@@ -43,7 +48,7 @@ export default function ImageUpload({ isAuthenticated }: ImageUploadProps) {
     setImages(newImages)
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
 
@@ -51,15 +56,35 @@ export default function ImageUpload({ isAuthenticated }: ImageUploadProps) {
     submitData.append('imageTitle', formData.imageTitle);
     submitData.append('imageDescription', formData.imageDescription)
 
-    if(images){
-      submitData.append('uploadedImage', formData.uploadedImage)
-    }
+    images.forEach((img) => {
+    submitData.append('images', img.file); // key must match backend
+  });
 
     // calling the api
     try {
+      const res = await api.post("/create/createImage", submitData)
+      if(res.data?.success === true){
+        toast.success('Image uploaded successfully')
+       }
+      else {
+        toast.error(res.data?.message ?? "Please check your details and try again.")
+      }
+    } catch (error: any) {
+       console.error("Image uploading error:", error)
       
-    } catch (error) {
+      let errorMessage = "Unable to create your account. Please try again."
       
+      if (error.response) {
+        errorMessage = error.response.data?.message || errorMessage
+      } else if (error.request) {
+        errorMessage = "No response from server. Please check if the backend is running."
+      } else {
+        errorMessage = error.message || errorMessage
+      }
+      
+      toast.error(errorMessage)
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -123,25 +148,27 @@ export default function ImageUpload({ isAuthenticated }: ImageUploadProps) {
               <div className="space-y-2">
                 <Label htmlFor="title">Image Title</Label>
                 <Input
-                  id="imagetitle"
-                  name="imagetitle"
+                  id="imageTitle"
+                  name="imageTitle"
                   placeholder="Enter image title"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
+                  value={formData.imageTitle}
                   required
+                  disabled={isLoading}
+                  onChange={handleInputChange}
                 />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="description">Description</Label>
                 <textarea
-                  id="imagedescription"
-                  name="imagedescription"
+                  id="imageDescription"
+                  name="imageDescription"
                   placeholder="Describe your gallery..."
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
+                  value={formData.imageDescription}
                   className="flex min-h-[120px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   required
+                  disabled={isLoading}
+                  onChange={handleInputChange}
                 />
               </div>
 

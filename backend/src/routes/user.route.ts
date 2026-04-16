@@ -1,7 +1,7 @@
 import express from 'express'
 import {registerUser, getUser , loginUser, getCurrentUser, updateUserProfile, deleteUser} from '../controllers/user.controller.ts'
 import verifyJwt from '../middlewares/auth.middleware.ts'
-import { singleAvatarUpload } from '../middlewares/multer.middleware.ts';
+import { singleAvatarUpload } from '../middlewares/upload.ts';
 const router = express.Router()
 
 

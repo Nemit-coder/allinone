@@ -1,44 +1,47 @@
 import multer from 'multer';
 import path from 'path';
-import { fileURLToPath } from 'url';
-import fs from 'fs'
+import fs from 'fs';
 
-// Get __dirname in ES modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// 🔥 reusable factory
+export const createUploader = (options: { folder: string }) => {
+  const storage = multer.diskStorage({
+    destination: (req: any, file, cb) => {
+      const userId = req.user?.id;
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const userId = req.user?.id;
+      const uploadPath = `public/uploads/${options.folder}/${userId}`;
 
-    const userDir = `public/uploads/avatars/${userId}`
-      fs.mkdirSync(userDir, {recursive: true})
-    cb(null, userDir); 
-  },
+      fs.mkdirSync(uploadPath, { recursive: true });
 
-  filename: (req, file, cb) => {
-    const userId = req.user?.id;
+      cb(null, uploadPath);
+    },
 
-    // Overwritting the avatar file
-    const filename = `${userId}${path.extname(file.originalname)}`
-    // const uniqueName = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, filename);
-  }
-});
+    filename: (req: any, file, cb) => {
+      const ext = path.extname(file.originalname);
 
-const fileFilter = (req: any, file : any, cb: any) => {
-  if (file.mimetype.startsWith('image/')) {
-    cb(null, true);
-  } else {
-    cb(new Error('Only images allowed!'), false);
-  }
+      if (options.folder === 'avatars') {
+        cb(null, `${req.user?.id}${ext}`);
+      } else {
+        const unique = `${Date.now()}-${Math.round(Math.random() * 1e9)}${ext}`;
+        cb(null, unique);
+      }
+    }
+  });
+
+  const fileFilter = (req: any, file: any, cb: any) => {
+    if (options.folder === 'videos') {
+      return file.mimetype.startsWith('video/')
+        ? cb(null, true)
+        : cb(new Error('Only videos allowed'), false);
+    }
+
+    return file.mimetype.startsWith('image/')
+      ? cb(null, true)
+      : cb(new Error('Only images allowed'), false);
+  };
+
+  return multer({
+    storage,
+    fileFilter,
+    limits: { fileSize: 20 * 1024 * 1024 }
+  });
 };
-
-const upload = multer({
-  storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
-  fileFilter
-});
-
-export const singleAvatarUpload = upload.single('avatar');
-export const multipleUpload = upload.array('images', 5); // Up to 5 images
