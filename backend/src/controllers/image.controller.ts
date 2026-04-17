@@ -6,14 +6,19 @@ import type {Request , Response} from 'express'
 const uploadImage = async (req: Request, res: Response) => {
     try {
         const { imageTitle , imageDescription} = req.body
-        let uploadImageUrl = undefined
+        // let uploadImageUrl = undefined
+        const uploadImageUrls: string[] = []
         const files = req.files as Express.Multer.File[];
 
         if (files && files.length > 0) {
-        uploadImageUrl = files[0] ? `uploads/images/${req.user?.id}/${files[0].filename}` : undefined;
+            files.forEach((file) => {
+                uploadImageUrls.push(
+                    `uploads/images/${req.user?.id}/${file.filename}`
+                )
+            })
         }
 
-        if(!imageTitle || !imageDescription){
+        if(!imageTitle || !imageDescription || !req.user?.id){
             return res.status(400).json({
                 success: false,
                 message: 'All required fields must be provided'
@@ -21,9 +26,10 @@ const uploadImage = async (req: Request, res: Response) => {
         }
 
         const createImage = await Image.create({
-            uploadedImage: uploadImageUrl ?? "",
+            uploadedImage: uploadImageUrls ?? "",
             imageTitle: imageTitle,
-            imageDescription: imageDescription
+            imageDescription: imageDescription,
+            uploadedBy: req.user.id
         })
 
         if(!createImage) {

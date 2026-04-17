@@ -33,7 +33,7 @@ export default function ImageUpload({ isAuthenticated }: ImageUploadProps) {
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || [])
-    console.log(files)
+    // console.log(files)
     const newImages = files.map((file) => ({
       file,
       preview: URL.createObjectURL(file),

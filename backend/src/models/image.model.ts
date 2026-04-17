@@ -3,7 +3,7 @@ import type {IImage} from '../types/image.type'
 
 const imageSchema = new mongoose.Schema<IImage>({
     uploadedImage: {
-        type: String,
+        type: [String],
         required: true
     },
     imageTitle: {
@@ -12,6 +12,11 @@ const imageSchema = new mongoose.Schema<IImage>({
     },
     imageDescription: {
         type: String
+    },
+    uploadedBy: {
+        type: mongoose.Types.ObjectId,
+        ref: 'User',
+        required: true
     }
 })
 

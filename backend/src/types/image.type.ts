@@ -1,7 +1,8 @@
-import {Document} from "mongoose"
+import mongoose , {Document} from "mongoose"
 
 export interface IImage extends Document {
-    uploadedImage: string,
+    uploadedImage: [string],
     imageTitle: string,
-    imageDescription: string
+    imageDescription: string,
+    uploadedBy: mongoose.Types.ObjectId
 }

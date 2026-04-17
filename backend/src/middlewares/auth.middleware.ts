@@ -15,7 +15,6 @@ const verifyJwt = (req: Request, res: Response, next: NextFunction) => {
   
   jwt.verify(token, env.ACCESS_TOKEN_SECRET as string, (err, decoded) => {
     if (err) return res.status(403).json({ message: "Invalid token" })
-      // console.log(req)
     req.user = decoded as {id:string}
     next()
   })
