@@ -15,6 +15,7 @@ interface DashboardProps {
 
 export default function Dashboard({ isAuthenticated }: DashboardProps) {
   const [username, setUsername] = useState('')
+  const [imageCount, setImageCount] = useState(0)
   const upper = username?.[0]?.toUpperCase() + username.slice(1)
   useEffect(() => {
     api.get("/users/me")
@@ -22,6 +23,7 @@ export default function Dashboard({ isAuthenticated }: DashboardProps) {
         // // console.log("Userfd :", res.data.user.userName)
         // // console.log("User user :", res.data)
         setUsername(res.data.user.userName)
+        setImageCount(res.data.stats.totalImages)
       })
       .catch(() => {
         window.location.href = "/signin"
@@ -70,7 +72,7 @@ export default function Dashboard({ isAuthenticated }: DashboardProps) {
               <ImageIcon className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">0</div>
+              <div className="text-2xl font-bold">{imageCount}</div>
               <p className="text-xs text-muted-foreground">+0 this week</p>
             </CardContent>
           </Card>

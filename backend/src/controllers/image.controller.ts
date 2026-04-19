@@ -51,6 +51,29 @@ const uploadImage = async (req: Request, res: Response) => {
     }
 }
 
+const getImages = async (req: Request , res: Response) => {
+    try {
+        const userId = req.user!.id
+        const fetchedImage = await Image.find({userId})
+        console.log(fetchedImage)
+
+        if(!fetchedImage) {
+            return res.json({
+                success: false,
+                message: "Error finding images"
+            })
+        }
+
+        res.status(200).json({
+            success: true,
+            images: fetchedImage
+        })
+    } catch (error) {
+        
+    }
+}
+
 export  {
-    uploadImage
+    uploadImage,
+    getImages
 }
