@@ -140,11 +140,7 @@ const getCurrentUser = async (req: Request, res: Response) => {
             return res.status(401).json({ message: "Authentication required" })
         }
 
-        // Run both queries in parallel (better performance)
-        const [user, imageCount] = await Promise.all([
-            User.findById(userId).select('-refreshToken'),
-            Image.countDocuments({ uploadedBy: userId })
-        ])
+       const user = await User.findById(userId).select('-refreshToken')
 
         if (!user) {
             return res.status(404).json({
@@ -156,9 +152,6 @@ const getCurrentUser = async (req: Request, res: Response) => {
         res.status(200).json({
             success: true,
             user,
-            stats: {
-                totalImages: imageCount
-            }
         })
 
     } catch (error: any) {

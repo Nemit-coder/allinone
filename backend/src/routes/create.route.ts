@@ -7,7 +7,7 @@ const router = express.Router()
 
 router
 .post('/createImage', verifyJwt, multipleImageUpload, uploadImage)
-.get('/getIsages', verifyJwt, getImages)
+.get('/getImages', verifyJwt, getImages)
 
 
 export default router

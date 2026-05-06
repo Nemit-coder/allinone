@@ -1,5 +1,6 @@
 import Image from '../models/image.model.ts'
 import type {Request , Response} from 'express'
+import mongoose from 'mongoose'
 
 /* ====== Upload Image ====== */ 
 
@@ -54,22 +55,36 @@ const uploadImage = async (req: Request, res: Response) => {
 const getImages = async (req: Request , res: Response) => {
     try {
         const userId = req.user!.id
-        const fetchedImage = await Image.find({userId})
-        console.log(fetchedImage)
+         const result = await Image.aggregate([
+            {
+                $match: {
+                    uploadedBy: new mongoose.Types.ObjectId(userId)
+                }
+            },
+            {
+                $project: {
+                    imageCount: { $size: "$uploadedImage" }
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    total: { $sum: "$imageCount" }
+                }
+            }
+        ])
 
-        if(!fetchedImage) {
-            return res.json({
-                success: false,
-                message: "Error finding images"
-            })
-        }
+        const totalImages = result[0]?.total || 0
 
         res.status(200).json({
             success: true,
-            images: fetchedImage
+            totalImages
         })
-    } catch (error) {
-        
+    } catch (error: any) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        })
     }
 }
 

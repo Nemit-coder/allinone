@@ -11,6 +11,7 @@ import Register from "./pages/Register"
 import Profile from "./pages/Profile"
 import Settings from "./pages/Settings"
 import Dashboard from "./pages/Dashboard"
+import Home from "./pages/Home"
 import Chat from "./pages/Chat"
 import CreateContent from "./pages/CreateContent"
 import VideoUpload from "./pages/VideoUpload"
@@ -91,6 +92,14 @@ function App() {
                 <Dashboard isAuthenticated={isAuthenticated} />
               </ProtectedRoute>
             }
+        />
+        <Route
+          path="/home"
+          element={
+            <ProtectedRoute>
+              <Home isAuthenticated={isAuthenticated}/>
+            </ProtectedRoute>
+          }
         />
         <Route
           path="/chat"

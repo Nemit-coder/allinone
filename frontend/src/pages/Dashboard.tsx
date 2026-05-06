@@ -23,11 +23,18 @@ export default function Dashboard({ isAuthenticated }: DashboardProps) {
         // // console.log("Userfd :", res.data.user.userName)
         // // console.log("User user :", res.data)
         setUsername(res.data.user.userName)
-        setImageCount(res.data.stats.totalImages)
       })
       .catch(() => {
         window.location.href = "/signin"
       })
+
+     api.get("/create/getImages") 
+       .then((res) => {
+        setImageCount(res.data.totalImages)
+       })
+       .catch((err) => {
+        console.log("Image fetch error:", err)
+       })
   }, [])
 
 

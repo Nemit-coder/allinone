@@ -29,7 +29,7 @@ export default function BlogUpload({ isAuthenticated }: BlogUploadProps) {
 
   return (
     <AppLayout isAuthenticated={isAuthenticated}>
-      <div className="container max-w-4xl py-8">
+      <div className="container max-w-4xl py-8 mx-auto">
         <div className="mb-6">
           <Button variant="ghost" asChild>
             <Link to="/create">

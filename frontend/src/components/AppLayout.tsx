@@ -1,6 +1,6 @@
 import type React from "react"
 import { Link, useLocation } from "react-router-dom"
-import { Home, MessageSquare, PlusCircle, Info, LogOut } from "lucide-react"
+import { Home, MessageSquare, PlusCircle, Info, LogOut , LayoutDashboard} from "lucide-react"
 import { Button } from "../components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar"
 import {
@@ -84,9 +84,15 @@ export default function AppLayout({ children, isAuthenticated }: AppLayoutProps)
 
             {isAuth && (
               <div className="hidden md:flex items-center gap-1">
+                <Button variant={isActive("/home") ? "secondary" : "ghost"} size="sm" asChild>
+                  <Link to="/home">
+                    <Home className="h-4 w-4" />
+                    Home
+                  </Link>
+                </Button>
                 <Button variant={isActive("/dashboard") ? "secondary" : "ghost"} size="sm" asChild>
                   <Link to="/dashboard">
-                    <Home className="h-4 w-4" />
+                    <LayoutDashboard className="h-4 w-4" />
                     Dashboard
                   </Link>
                 </Button>
