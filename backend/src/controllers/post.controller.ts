@@ -127,7 +127,7 @@ const getPostStats = async (req: Request, res: Response) => {
       if (stat._id === "blog")  result.blogs  = stat.totalPosts
     })
 
-    console.log(result)
+    // console.log(result)
     res.status(200).json({
       success: true,
       stats: result

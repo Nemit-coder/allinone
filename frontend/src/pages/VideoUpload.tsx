@@ -10,16 +10,28 @@ import { Input } from "../components/ui/input"
 import { Label } from "../components/ui/label"
 import { Link } from "react-router-dom"
 import { Upload, X, ArrowLeft } from "lucide-react"
+import api from "../lib/api"
+import toast from "react-hot-toast"
 
 interface VideoUploadProps {
   isAuthenticated: boolean
 }
 
 export default function VideoUpload({ isAuthenticated }: VideoUploadProps) {
+   const [formData, setFormData] = useState({
+      title: "",
+      description: ""
+    })
+  const [isLoading, setIsLoading] = useState(false)
   const [videoFile, setVideoFile] = useState<File | null>(null)
   const [videoPreview, setVideoPreview] = useState<string | null>(null)
-  const [title, setTitle] = useState("")
-  const [description, setDescription] = useState("")
+  // const [title, setTitle] = useState("")
+  // const [description, setDescription] = useState("")
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const { name, value } = e.target
+      setFormData((prev) => ({ ...prev, [name]: value }))
+    }
 
   const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -38,12 +50,48 @@ export default function VideoUpload({ isAuthenticated }: VideoUploadProps) {
     }
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // console.log("[v0] Video upload:", { title, description, videoFile })
-    // Handle video upload logic here
-    alert("Video uploaded successfully!")
-  }
+    setIsLoading(true)
+
+    const submitData = new FormData()
+    submitData.append('title', formData.title);
+    submitData.append('description', formData.description)
+    submitData.append('type', "video")
+
+    if (videoFile) {
+      submitData.append('media', videoFile);
+    }
+
+    try {
+      const res = await api.post("/create/createPost/video", submitData)
+      if(res.data?.success === true){
+        toast.success('Video uploaded successfully')
+       }
+      else {
+        toast.error(res.data?.message ?? "Please check your details and try again.")
+      }
+    } catch (error: any) {
+       console.error("Image uploading error:", error)
+      
+      let errorMessage = "Unable to create your account. Please try again."
+      
+      if (error.response) {
+        errorMessage = error.response.data?.message || errorMessage
+      } else if (error.request) {
+        errorMessage = "No response from server. Please check if the backend is running."
+      } else {
+        errorMessage = error.message || errorMessage
+      }
+      
+      toast.error(errorMessage)
+    } finally {
+      setIsLoading(false)
+    }
+}
+
+  
+
 
   return (
     <AppLayout isAuthenticated={isAuthenticated}>
@@ -94,10 +142,12 @@ export default function VideoUpload({ isAuthenticated }: VideoUploadProps) {
                 <Label htmlFor="title">Video Title</Label>
                 <Input
                   id="title"
+                  name="title"
                   placeholder="Enter video title"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
+                  value={formData.title}
+                  onChange={handleInputChange}
                   required
+                  disabled={isLoading}
                 />
               </div>
 
@@ -105,11 +155,13 @@ export default function VideoUpload({ isAuthenticated }: VideoUploadProps) {
                 <Label htmlFor="description">Description</Label>
                 <textarea
                   id="description"
+                  name="description"
                   placeholder="Describe your video..."
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
+                  value={formData.description}
+                  onChange={handleInputChange}
                   className="flex min-h-[120px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   required
+                  disabled={isLoading}
                 />
               </div>
 

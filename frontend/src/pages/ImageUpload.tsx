@@ -19,7 +19,6 @@ interface ImageUploadProps {
 
 export default function ImageUpload({ isAuthenticated }: ImageUploadProps) {
   const [formData, setFormData] = useState({
-    // uploadedImage: "",
     title: "",
     description: ""
   })
@@ -58,7 +57,7 @@ export default function ImageUpload({ isAuthenticated }: ImageUploadProps) {
     submitData.append('type', "image")
 
     images.forEach((img) => {
-    submitData.append('media', img.file); // key must match backend
+    submitData.append('media', img.file); 
   });
 
     // calling the api
