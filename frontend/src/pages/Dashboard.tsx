@@ -17,6 +17,7 @@ export default function Dashboard({ isAuthenticated }: DashboardProps) {
   const [username, setUsername] = useState('')
   const [imageCount, setImageCount] = useState(0)
   const [videoCount, setVideoCount]= useState(0)
+  const [blogCount, setBlogCount] = useState(0)
   const upper = username?.[0]?.toUpperCase() + username.slice(1)
   useEffect(() => {
     api.get("/users/me")
@@ -33,6 +34,7 @@ export default function Dashboard({ isAuthenticated }: DashboardProps) {
        .then((res) => {
         setImageCount(res.data.stats.images)
         setVideoCount(res.data.stats.videos)
+        setBlogCount(res.data.stats.blogs)
        })
        .catch((err) => {
         console.log("Image fetch error:", err)
@@ -91,7 +93,7 @@ export default function Dashboard({ isAuthenticated }: DashboardProps) {
               <FileText className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">0</div>
+              <div className="text-2xl font-bold">{blogCount}</div>
               <p className="text-xs text-muted-foreground">+0 this week</p>
             </CardContent>
           </Card>

@@ -15,6 +15,10 @@ const postSchema = new mongoose.Schema<IPost>({
         type: String,
         required: true
     },
+    tags: {
+        type: [String],
+        default: []
+    },
     description: {
         type: String
     },

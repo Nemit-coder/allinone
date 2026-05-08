@@ -5,8 +5,10 @@ import type { PostType } from "../types/post.type";
 
 const uploadPost = async (req: Request, res: Response) => {
   try {
-    const { title, description } = req.body;
+    const { title, description, tags } = req.body;
     const type = req.body.type as PostType
+
+    console.log(req.body)
     
     if (!title || !req.user?.id || !type) {
       return res.status(400).json({
@@ -14,6 +16,11 @@ const uploadPost = async (req: Request, res: Response) => {
         message: 'Title, type, and user are required',
       })
     }
+    
+    const parsedTags : string[] = 
+    type === 'blog' && tags
+    ? tags.split(',').map((t: string) => t.trim()).filter(Boolean)
+    : []
     
     const mediaUrls: string[] = [];
 
@@ -49,6 +56,7 @@ const uploadPost = async (req: Request, res: Response) => {
       media: mediaUrls,
       title,
       description,
+      tags: parsedTags,
       uploadedBy: req.user.id,
     });
 
@@ -69,15 +77,8 @@ const uploadPost = async (req: Request, res: Response) => {
 
 const getPosts = async (req: Request , res: Response) => {
     try {
-        const userId = req.user!.id
-        // const {type} = req.query
 
-        // console.log(userId)
-        const filter: any = { uploadedBy: new mongoose.Types.ObjectId(userId) }
-
-        // if (type) filter.type = type
-
-        const posts = await Post.find(filter).sort({ createdAt: -1 })
+        const posts = await Post.find()
 
         // console.log(posts)
         res.status(200).json({

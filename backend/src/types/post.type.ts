@@ -6,6 +6,7 @@ export interface IPost extends Document {
     type: PostType
     media: string[],
     title: string,
+    tags: string[],
     description? :string,
     uploadedBy: mongoose.Types.ObjectId
     createdAt: Date
