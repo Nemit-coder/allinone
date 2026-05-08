@@ -28,15 +28,21 @@ export const createUploader = (options: { folder: string }) => {
   });
 
   const fileFilter = (req: any, file: any, cb: any) => {
-    if (options.folder === 'videos') {
-      return file.mimetype.startsWith('video/')
-        ? cb(null, true)
-        : cb(new Error('Only videos allowed'), false);
-    }
-
+    if (options.folder === 'avatars') {
     return file.mimetype.startsWith('image/')
       ? cb(null, true)
-      : cb(new Error('Only images allowed'), false);
+      : cb(new Error('Only images allowed for avatars'), false);
+  }
+
+  // posts → allow both image + video
+  if (
+    file.mimetype.startsWith('image/') ||
+    file.mimetype.startsWith('video/')
+  ) {
+    return cb(null, true);
+  }
+
+  cb(new Error('Only images or videos allowed'), false);
   };
 
   return multer({

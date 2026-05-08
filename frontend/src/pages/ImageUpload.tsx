@@ -19,9 +19,9 @@ interface ImageUploadProps {
 
 export default function ImageUpload({ isAuthenticated }: ImageUploadProps) {
   const [formData, setFormData] = useState({
-    uploadedImage: "",
-    imageTitle: "",
-    imageDescription: ""
+    // uploadedImage: "",
+    title: "",
+    description: ""
   })
   const [isLoading, setIsLoading] = useState(false)
   const [images, setImages] = useState<{ file: File; preview: string }[]>([])
@@ -53,16 +53,17 @@ export default function ImageUpload({ isAuthenticated }: ImageUploadProps) {
     setIsLoading(true)
 
     const submitData = new FormData()
-    submitData.append('imageTitle', formData.imageTitle);
-    submitData.append('imageDescription', formData.imageDescription)
+    submitData.append('title', formData.title);
+    submitData.append('description', formData.description)
+    submitData.append('type', "image")
 
     images.forEach((img) => {
-    submitData.append('images', img.file); // key must match backend
+    submitData.append('media', img.file); // key must match backend
   });
 
     // calling the api
     try {
-      const res = await api.post("/create/createImage", submitData)
+      const res = await api.post("/create/createPost/image", submitData)
       if(res.data?.success === true){
         toast.success('Image uploaded successfully')
        }
@@ -148,10 +149,10 @@ export default function ImageUpload({ isAuthenticated }: ImageUploadProps) {
               <div className="space-y-2">
                 <Label htmlFor="title">Image Title</Label>
                 <Input
-                  id="imageTitle"
-                  name="imageTitle"
+                  id="title"
+                  name="title"
                   placeholder="Enter image title"
-                  value={formData.imageTitle}
+                  value={formData.title}
                   required
                   disabled={isLoading}
                   onChange={handleInputChange}
@@ -161,10 +162,10 @@ export default function ImageUpload({ isAuthenticated }: ImageUploadProps) {
               <div className="space-y-2">
                 <Label htmlFor="description">Description</Label>
                 <textarea
-                  id="imageDescription"
-                  name="imageDescription"
+                  id="description"
+                  name="description"
                   placeholder="Describe your gallery..."
-                  value={formData.imageDescription}
+                  value={formData.description}
                   className="flex min-h-[120px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   required
                   disabled={isLoading}

@@ -4,7 +4,7 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import {env} from '../config/env.ts'
 import { generateAccessToken, generateRefreshToken } from "../utils/token.ts"
-import Image from '../models/image.model.ts'
+import Image from '../models/post.model.ts'
 
  /* ===== Register ===== */
 const registerUser = async (req : Request, res : Response) => {

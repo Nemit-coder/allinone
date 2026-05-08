@@ -28,9 +28,9 @@ export default function Dashboard({ isAuthenticated }: DashboardProps) {
         window.location.href = "/signin"
       })
 
-     api.get("/create/getImages") 
+    api.get("/create/getPostStats") 
        .then((res) => {
-        setImageCount(res.data.totalImages)
+        setImageCount(res.data.stats.images)
        })
        .catch((err) => {
         console.log("Image fetch error:", err)

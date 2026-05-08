@@ -1,13 +1,16 @@
 import express from 'express'
-import { uploadImage , getImages} from '../controllers/image.controller.ts'
+import { uploadPost , getPosts, getPostStats} from '../controllers/post.controller.ts'
 import verifyJwt from '../middlewares/auth.middleware.ts'
-import { multipleImageUpload } from '../middlewares/upload.ts';
+import { multipleImageUpload , singleVideoUpload} from '../middlewares/upload.ts';
 const router = express.Router()
 
 
 router
-.post('/createImage', verifyJwt, multipleImageUpload, uploadImage)
-.get('/getImages', verifyJwt, getImages)
+.post('/createPost/image', verifyJwt, multipleImageUpload, uploadPost)
+.post('/createPost/video', verifyJwt, singleVideoUpload, uploadPost)
+.post('/createPost/blog', verifyJwt, uploadPost)
+.get('/getPosts', verifyJwt, getPosts)
+.get('/getPostStats', verifyJwt, getPostStats)
 
 
 export default router

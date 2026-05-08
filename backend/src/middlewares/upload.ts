@@ -6,8 +6,8 @@ export const singleAvatarUpload =
 
 // 🖼 Images upload (multiple)
 export const multipleImageUpload =
-  createUploader({ folder: 'images' }).array('images', 5);
+  createUploader({ folder: 'posts' }).array('media', 5);
 
 // 🎥 Video upload (single)
 export const singleVideoUpload =
-  createUploader({ folder: 'videos' }).single('video');
+  createUploader({ folder: 'posts' }).single('media');
