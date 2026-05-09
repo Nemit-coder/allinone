@@ -78,9 +78,13 @@ const uploadPost = async (req: Request, res: Response) => {
 const getPosts = async (req: Request , res: Response) => {
     try {
 
-        const posts = await Post.find()
+        const { type } = req.query
+        const filter: any = {}
+        if (type) filter.type = type
 
-        // console.log(posts)
+        const posts = await Post.find(filter).sort('-createdAt')
+
+        
         res.status(200).json({
             success: true,
             posts,
