@@ -1,3 +1,6 @@
+import { Link } from 'react-router-dom'
+
+
 const BASE_URL = "http://localhost:3000"  // your backend URL
 
 interface Post {
@@ -12,7 +15,7 @@ interface Post {
 
 export default function PostCard({ post }: { post: Post }) {
   return (
-    <div className="rounded-xl border bg-card overflow-hidden flex flex-col">
+    <Link to={`/post/${post._id}`} className="group block rounded-xl border bg-card overflow-hidden flex flex-col hover:shadow-lg transition-shadow duration-200">
 
       {/* Thumbnail area */}
       {post.type === "image" && post.media.length > 0 && (
@@ -78,6 +81,6 @@ export default function PostCard({ post }: { post: Post }) {
           </div>
         )}
       </div>
-    </div>
+    </Link>
   )
 }

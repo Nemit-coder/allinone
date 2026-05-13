@@ -23,6 +23,7 @@ import { Toaster } from "react-hot-toast"
 import ProtectedRoute from "./components/ProtectedRoute"
 import PublicRoute from "./components/PublicRoute"
 import { getAccessToken } from "./lib/api"
+import PostViewer from "./pages/PostViewer"
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -40,6 +41,14 @@ function App() {
         <Route path="/forget-password-email" element={<ForgetPasswordEmail />}/>
         <Route path="/reset-password" element={<ResetPassword />}/>
         <Route path="/auth/callback" element={<AuthCallback />} />
+        <Route
+         path="/post/:id"
+         element={
+          <ProtectedRoute>
+            <PostViewer  isAuthenticated={isAuthenticated}/>
+          </ProtectedRoute>
+         }
+        />
         <Route
           path="/profile"
           element={

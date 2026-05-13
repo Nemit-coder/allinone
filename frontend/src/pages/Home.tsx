@@ -46,7 +46,7 @@ export default function Home({ isAuthenticated }: HomeProps) {
 
   return (
     <AppLayout isAuthenticated={isAuthenticated}>
-      <div className="container max-w-5xl mx-auto py-8 px-4">
+      <div className="container max-w-8xl mx-auto py-8 px-4">
 
         {/* Filter bar */}
         <div className="flex gap-2 mb-8">
@@ -71,7 +71,7 @@ export default function Home({ isAuthenticated }: HomeProps) {
         ) : posts.length === 0 ? (
           <div className="text-center text-muted-foreground py-20">No posts found.</div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
             {posts.map((post) => (
               <PostCard key={post._id} post={post} />
             ))}
