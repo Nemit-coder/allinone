@@ -86,7 +86,7 @@ const getPosts = async (req: Request , res: Response) => {
 
         // for single post
         if(id) {
-          const post = await Post.findById(id)
+          const post = await Post.findById(id).populate('uploadedBy', 'userName avatar')
           if(!post){
             return res.status(404).json({
               success : false,
@@ -106,7 +106,6 @@ const getPosts = async (req: Request , res: Response) => {
             success: true,
             posts,
         })
-        console.log(posts)
     } catch (error: any) {
         res.status(500).json({
             success: false,

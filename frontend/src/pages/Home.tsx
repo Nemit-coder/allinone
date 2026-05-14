@@ -16,7 +16,11 @@ interface Post {
   title: string
   description?: string
   tags?: string[]
-  uploadedBy: string
+  uploadedBy: {
+    _id: string
+    userName: string
+    avatar: string
+  }
   createdAt: string
 }
 

@@ -2,6 +2,8 @@ import { useEffect, useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import AppLayout from "../components/AppLayout"
 import api from "../lib/api"
+import { ArrowLeft } from 'lucide-react'
+import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar"
 
 const BASE_URL = "http://localhost:3000"
 
@@ -12,7 +14,11 @@ interface Post {
   title: string
   description?: string
   tags?: string[]
-  uploadedBy: string
+  uploadedBy: {
+    _id: string
+    userName: string
+    avatar: string
+  }
   createdAt: string
 }
 
@@ -30,7 +36,7 @@ export default function PostViewer({ isAuthenticated }: PostDetailProps) {
   useEffect(() => {
     if (!id) return
     setIsLoading(true)
-    api.get(`/create/getPosts/${id}`)          // adjust endpoint if yours differs
+    api.get(`/create/getPosts/${id}`)        
       .then((res) => {
         if (res.data?.success) setPost(res.data.post)
         else setError("Post not found.")
@@ -48,7 +54,7 @@ export default function PostViewer({ isAuthenticated }: PostDetailProps) {
           onClick={() => navigate(-1)}
           className="mb-6 flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
-          ← Back
+          <ArrowLeft className="h-4 w-4"/> Back
         </button>
 
         {isLoading && (
@@ -118,6 +124,19 @@ export default function PostViewer({ isAuthenticated }: PostDetailProps) {
               <p className="text-xs text-muted-foreground">
                 Posted on {new Date(post.createdAt).toLocaleDateString()}
               </p>
+              <div className="flex items-center gap-2">
+                <Avatar className="h-9 w-9" key={post.uploadedBy.avatar || 'fallback'}>
+                  {post.uploadedBy.avatar ? (
+                    <AvatarImage src={`http://localhost:3000${post.uploadedBy.avatar}`} alt="User" />
+                  ): null}
+                  <AvatarFallback>
+                    {post.uploadedBy.userName?.[0]?.toUpperCase() || "U"}
+                  </AvatarFallback>
+                </Avatar>
+                <p className="text-xs text-muted-foreground">
+                  {post.uploadedBy.userName}
+                </p>
+              </div>
             </div>
 
             {/* Extra images for image posts */}
