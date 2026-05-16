@@ -51,16 +51,18 @@ export default function AppLayout({ children, isAuthenticated }: AppLayoutProps)
       api.get("/users/me")
         .then((res) => {
           if (res.data?.user) {
-            // console.log(res.data)
             setUserData({
               userName: res.data.user.userName,
               email: res.data.user.email,
-              avatar: res.data.user.avatar,
+              avatar: res.data.user.avatar.url,
             })
           }
         })
-        .catch(() => {
-          // Silently fail - user might not be authenticated
+        .catch((error: any) => {
+          if (error?.response?.status === 401 || error?.response?.status === 403) {
+            setAccessToken(null)
+            window.location.href = "/signin"
+          }
         })
     }
   }, [isAuth, token])
@@ -124,7 +126,7 @@ export default function AppLayout({ children, isAuthenticated }: AppLayoutProps)
                 <DropdownMenuTrigger asChild>
                   <Avatar className="h-9 w-9 cursor-pointer" key={userData?.avatar || 'fallback'}>
                     {userData?.avatar ? (
-                      <AvatarImage src={`http://localhost:3000${userData?.avatar}`} alt="User" />
+                      <AvatarImage src={userData?.avatar} alt="User" />
                     ) : null}
                     <AvatarFallback>
                       {userData?.userName?.[0]?.toUpperCase() || "U"}

@@ -20,12 +20,11 @@ export default function Profile({isAuthenticated} : ProfileProps){
       username: "",
       fullname: "",
       email: "",
-      avatar : "",
       password: ""
     })
     const [avatarPreview, setAvatarPreview] = useState<string>("")
     const [avatarFile, setAvatarFile] = useState<File | null>(null);
-    const [userData, setUserData] = useState<{ userName?: string; email?: string; fullName? : string; avatar? : string;} | null>(null)
+    const [userData, setUserData] = useState<{ userName?: string; email?: string; fullName? : string;  avatar?: { url: string; publicId: string }} | null>(null)
     const [isLoading, setIsLoading] = useState(false)
 
     const handleInputChange = (e : React.ChangeEvent<HTMLInputElement>) => {
@@ -112,7 +111,7 @@ export default function Profile({isAuthenticated} : ProfileProps){
                   username: user.userName,
                   email: user.email,
                   fullname : user.fullName,
-                  avatar: user.avatar,
+                  // avatar: user.avatar.url,
                   password: "",
                 })
               }
@@ -138,12 +137,7 @@ export default function Profile({isAuthenticated} : ProfileProps){
                 <div className="space-y-2 mb-3">
                   <Label htmlFor="avatar">Avatar</Label>
                   <Avatar>
-                    <AvatarImage src={
-                        avatarPreview
-                        ? avatarPreview                      
-                      : `http://localhost:3000${userData?.avatar}`
-                    }
-                      />
+                    <AvatarImage src={avatarPreview || userData?.avatar?.url || ""} />
                   </Avatar>
                   <Input
                     id="avatar"

@@ -20,8 +20,14 @@ const userSchema = new mongoose.Schema<IUser>({
         required: false // Optional for OAuth users
     },
     avatar: {
-        type : String,
-        default: "https://ui-avatars.com/api/?name=biily"
+        url: {
+            type: String,
+            default: "https://ui-avatars.com/api/?name=biily"
+        },
+        publicId: {
+            type: String,
+            default: ""
+        }
     },
     refreshToken: {
         type: String

@@ -1,10 +1,10 @@
 import AppLayout from "../components/AppLayout"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card"
 import { Button } from "../components/ui/button"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { Video, ImageIcon, FileText, TrendingUp, Users, Eye } from "lucide-react"
 import { useEffect, useState } from "react"
-import api from "../lib/api"
+import api, { setAccessToken } from "../lib/api"
 
 interface DashboardProps {
   isAuthenticated: boolean
@@ -19,15 +19,18 @@ export default function Dashboard({ isAuthenticated }: DashboardProps) {
   const [videoCount, setVideoCount]= useState(0)
   const [blogCount, setBlogCount] = useState(0)
   const upper = username?.[0]?.toUpperCase() + username.slice(1)
+  const navigate = useNavigate()
+
   useEffect(() => {
     api.get("/users/me")
       .then((res) => {
-        // // console.log("Userfd :", res.data.user.userName)
-        // // console.log("User user :", res.data)
         setUsername(res.data.user.userName)
       })
-      .catch(() => {
-        window.location.href = "/signin"
+      .catch((error: any) => {
+        if (error?.response?.status === 401 || error?.response?.status === 403) {
+          setAccessToken(null)
+          navigate("/signin", { replace: true })
+        }
       })
 
     api.get("/create/getPostStats") 
@@ -39,7 +42,7 @@ export default function Dashboard({ isAuthenticated }: DashboardProps) {
        .catch((err) => {
         console.log("Image fetch error:", err)
        })
-  }, [])
+  }, [navigate])
 
 
   return (

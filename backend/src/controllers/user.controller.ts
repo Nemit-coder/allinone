@@ -1,19 +1,17 @@
 import User from '../models/user.model.ts'
 import type { Request, Response } from 'express'
 import bcrypt from 'bcrypt'
-import jwt from 'jsonwebtoken'
-import {env} from '../config/env.ts'
+import cloudinary from '../config/cloudinary.config.ts'
 import { generateAccessToken, generateRefreshToken } from "../utils/token.ts"
-import Image from '../models/post.model.ts'
 
  /* ===== Register ===== */
 const registerUser = async (req : Request, res : Response) => {
     try {        
         const {userName, fullName, email, password} = req.body
-        let avatarUrl = undefined;
-        if (req.file) {
-          avatarUrl = `/uploads/avatars/${req.user?.id}/${req.file.filename}`;
-        }
+
+          const avatarUrl = req.file?.path ?? ""
+          const avatarPublicId = req.file?.filename ?? ""
+          
         // ==> Validating Required Fields
         if (!email || !password || !userName || !fullName) {
             return res.status(400).json({
@@ -62,7 +60,10 @@ const registerUser = async (req : Request, res : Response) => {
             fullName: fullName,
             email: normalizedEmail,
             password: passwordHash,
-            avatar: avatarUrl ?? "",
+            avatar: {
+                url: avatarUrl,
+                publicId: avatarPublicId
+            }
             // refreshToken: refreshToken
         })
 
@@ -95,7 +96,7 @@ const registerUser = async (req : Request, res : Response) => {
             user: {
                 id: createUser._id,
                 email: normalizedEmail,
-                avatar: createUser.avatar
+                avatar: createUser.avatar.url
             }
         })
     } catch (error : any) {
@@ -153,7 +154,6 @@ const getCurrentUser = async (req: Request, res: Response) => {
             success: true,
             user,
         })
-
     } catch (error: any) {
         res.status(500).json({ message: `Server Error : ${error.message}` })
     }
@@ -246,8 +246,17 @@ const updateUserProfile = async (req: Request, res : Response) => {
         if (password) updateData.password = password
 
          if (req.file) {
-            console.log(req.file.filename)
-            updateData.avatar = `/uploads/avatars/${req.user?.id}/${req.file.filename}`
+        // ✅ Delete old avatar from Cloudinary before saving new one
+        const existingUser = await User.findById(userId)
+        if (existingUser?.avatar?.publicId) {
+            await cloudinary.uploader.destroy(existingUser.avatar.publicId)
+        }
+
+        // ✅ Save new Cloudinary avatar
+        updateData.avatar = {
+            url: req.file.path,
+            publicId: req.file.filename
+        }
         }
 
        if (password && password.trim() !== "") {

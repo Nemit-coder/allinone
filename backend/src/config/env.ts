@@ -1,7 +1,7 @@
 import * as dotenv from 'dotenv'
 dotenv.config()
 
-const requireEnv = ["MONGO_DB_URL", "REFRESH_TOKEN_EXPIRY","ACCESS_TOKEN_EXPIRY","ACCESS_TOKEN_SECRET","REFRESH_TOKEN_SECRET", "GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET" ] as const;
+const requireEnv = ["MONGO_DB_URL", "REFRESH_TOKEN_EXPIRY","ACCESS_TOKEN_EXPIRY","ACCESS_TOKEN_SECRET","REFRESH_TOKEN_SECRET", "GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET", "CLOUDINARY_CLOUD_NAME", "CLOUDINARY_API_KEY", "CLOUDINARY_API_SECRET" ] as const;
 
 for (const key of requireEnv){
     if(!process.env[key]){
@@ -22,6 +22,10 @@ export const env: {
   EMAIL_USER: string;
   EMAIL_PASS: string;
   EMAIL_FROM: string;
+  CLOUDINARY_CLOUD_NAME: string;
+  CLOUDINARY_API_KEY: string;
+  CLOUDINARY_API_SECRET: string;
+
 
 } = {
   MONGO_DB_URL: process.env.MONGO_DB_URL!,
@@ -36,5 +40,7 @@ export const env: {
   EMAIL_USER: process.env.EMAIL_USER!,
   EMAIL_PASS: process.env.EMAIL_PASS!,
   EMAIL_FROM: process.env.EMAIL_FROM!,
-
+  CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME!,
+  CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY!,
+  CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET!,
 };
