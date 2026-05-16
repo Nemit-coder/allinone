@@ -1,8 +1,5 @@
 import { Link } from 'react-router-dom'
 
-
-const BASE_URL = "http://localhost:3000"  // your backend URL
-
 interface Post {
   _id: string
   type: "image" | "video" | "blog"
@@ -14,14 +11,16 @@ interface Post {
 }
 
 export default function PostCard({ post }: { post: Post }) {
+  console.log(post)
   return (
     <Link to={`/post/${post._id}`} className="group block rounded-xl border bg-card overflow-hidden flex flex-col hover:shadow-lg transition-shadow duration-200">
+
 
       {/* Thumbnail area */}
       {post.type === "image" && post.media.length > 0 && (
         <div className="aspect-video w-full overflow-hidden bg-muted">
           <img
-            src={`${BASE_URL}/${post.media[0]}`}
+            src={post.media[0]}
             alt={post.title}
             className="w-full h-full object-cover"
           />
@@ -31,7 +30,7 @@ export default function PostCard({ post }: { post: Post }) {
       {post.type === "video" && post.media.length > 0 && (
         <div className="aspect-video w-full overflow-hidden bg-black">
           <video
-            src={`${BASE_URL}/${post.media[0]}`}
+            src={post.media[0]}
             className="w-full h-full object-cover"
             muted
             onMouseOver={(e) => (e.currentTarget as HTMLVideoElement).play()}

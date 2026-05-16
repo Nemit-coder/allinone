@@ -27,19 +27,17 @@ const uploadPost = async (req: Request, res: Response) => {
     if(type === 'image'){
       const files = req.files as Express.Multer.File[];
 
-       if (files && files.length > 0) {
-      files.forEach((file) => {
-        mediaUrls.push(
-          `uploads/posts/${req.user?.id}/${file.filename}`
-        );
-      });
-    }
+     if (files && files.length > 0) {
+        files.forEach((file) => {
+          mediaUrls.push(file.path);
+        });
+     }
     }
 
     if(type === 'video'){
       const file = req.file as Express.Multer.File
       if(file ){
-        mediaUrls.push(`uploads/posts/${req.user?.id}/${file.filename}`)
+        mediaUrls.push(file.path)
       }
     }
 
@@ -106,6 +104,7 @@ const getPosts = async (req: Request , res: Response) => {
             success: true,
             posts,
         })
+
     } catch (error: any) {
         res.status(500).json({
             success: false,

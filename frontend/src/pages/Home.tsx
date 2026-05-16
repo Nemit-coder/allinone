@@ -50,7 +50,7 @@ export default function Home({ isAuthenticated }: HomeProps) {
 
   return (
     <AppLayout isAuthenticated={isAuthenticated}>
-      <div className="container max-w-8xl mx-auto py-8 px-4">
+      <div className="container max-w-8xl mx-auto py-10 px-4">
 
         {/* Filter bar */}
         <div className="flex gap-2 mb-8">
