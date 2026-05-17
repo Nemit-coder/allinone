@@ -173,7 +173,7 @@ export default function ImageUpload({ isAuthenticated }: ImageUploadProps) {
               </div>
 
               <div className="flex gap-4">
-                <Button type="submit" disabled={images.length === 0}>
+                <Button type="submit" disabled={isLoading}>
                   <Upload className="mr-2 h-4 w-4" />
                   Upload Images
                 </Button>

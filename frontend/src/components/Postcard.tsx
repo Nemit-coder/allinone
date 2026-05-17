@@ -11,7 +11,6 @@ interface Post {
 }
 
 export default function PostCard({ post }: { post: Post }) {
-  console.log(post)
   return (
     <Link to={`/post/${post._id}`} className="group block rounded-xl border bg-card overflow-hidden flex flex-col hover:shadow-lg transition-shadow duration-200">
 

@@ -166,7 +166,7 @@ export default function VideoUpload({ isAuthenticated }: VideoUploadProps) {
               </div>
 
               <div className="flex gap-4">
-                <Button type="submit" disabled={!videoFile}>
+                <Button type="submit" disabled={isLoading}>
                   <Upload className="mr-2 h-4 w-4" />
                   Upload Video
                 </Button>

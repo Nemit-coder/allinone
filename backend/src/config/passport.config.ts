@@ -30,7 +30,10 @@ passport.use(
           fullName: profile.displayName || "Google User",
           email: email,
           // password is optional for OAuth users
-          avatar: profile.photos?.[0]?.value || "https://ui-avatars.com/api/?name=Google User",
+          avatar: {
+            url: profile.photos?.[0]?.value || "https://ui-avatars.com/api/?name=Google User",
+            publicId: ""
+          },
         });
         // // console.log(profile)
 

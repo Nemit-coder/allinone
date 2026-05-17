@@ -1,7 +1,24 @@
 import * as dotenv from 'dotenv'
 dotenv.config()
 
-const requireEnv = ["MONGO_DB_URL", "REFRESH_TOKEN_EXPIRY","ACCESS_TOKEN_EXPIRY","ACCESS_TOKEN_SECRET","REFRESH_TOKEN_SECRET", "GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET", "CLOUDINARY_CLOUD_NAME", "CLOUDINARY_API_KEY", "CLOUDINARY_API_SECRET" ] as const;
+const requireEnv = [
+  "MONGO_DB_URL",
+  "REFRESH_TOKEN_EXPIRY",
+  "ACCESS_TOKEN_EXPIRY",
+  "ACCESS_TOKEN_SECRET",
+  "REFRESH_TOKEN_SECRET",
+  "GOOGLE_CLIENT_ID",
+  "GOOGLE_CLIENT_SECRET",
+  "CLOUDINARY_CLOUD_NAME",
+  "CLOUDINARY_API_KEY",
+  "CLOUDINARY_API_SECRET",
+  // Email vars are required for password reset/email features
+  "EMAIL_HOST",
+  "EMAIL_PORT",
+  "EMAIL_USER",
+  "EMAIL_PASS",
+  "EMAIL_FROM",
+] as const;
 
 for (const key of requireEnv){
     if(!process.env[key]){
@@ -35,11 +52,12 @@ export const env: {
   REFRESH_TOKEN_EXPIRY: process.env.REFRESH_TOKEN_EXPIRY!,
   GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID!,
   GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET!,
-  EMAIL_HOST: process.env.EMAIL_HOST!,
-  EMAIL_PORT: Number(process.env.EMAIL_PORT!),
-  EMAIL_USER: process.env.EMAIL_USER!,
-  EMAIL_PASS: process.env.EMAIL_PASS!,
-  EMAIL_FROM: process.env.EMAIL_FROM!,
+  // EMAIL_HOST: process.env.EMAIL_HOST!,
+  EMAIL_HOST: process.env.EMAIL_HOST!.trim(),
+  EMAIL_PORT: Number(process.env.EMAIL_PORT!.toString().trim()),
+  EMAIL_USER: process.env.EMAIL_USER!.trim(),
+  EMAIL_PASS: process.env.EMAIL_PASS!.trim(),
+  EMAIL_FROM: process.env.EMAIL_FROM!.trim(),
   CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME!,
   CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY!,
   CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET!,

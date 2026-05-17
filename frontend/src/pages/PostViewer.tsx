@@ -72,7 +72,7 @@ export default function PostViewer({ isAuthenticated }: PostDetailProps) {
             {post.type === "image" && post.media.length > 0 && (
               <div className="rounded-xl overflow-hidden bg-muted">
                 <img
-                  src={`${BASE_URL}/${post.media[0]}`}
+                  src={post.media[0]}
                   alt={post.title}
                   className="w-full object-contain max-h-[70vh]"
                 />
@@ -82,7 +82,7 @@ export default function PostViewer({ isAuthenticated }: PostDetailProps) {
             {post.type === "video" && post.media.length > 0 && (
               <div className="rounded-xl overflow-hidden bg-black">
                 <video
-                  src={`${BASE_URL}/${post.media[0]}`}
+                  src={post.media[0]}
                   className="w-full max-h-[70vh]"
                   controls
                   autoPlay

@@ -44,7 +44,7 @@ export default function BlogUpload({ isAuthenticated }: BlogUploadProps) {
     try {
       const res = await api.post("/create/createPost/blog", submitData)
       if(res.data?.success === true){
-        toast.success('Image uploaded successfully')
+        toast.success('Blog uploaded successfully')
        }
       else {
         toast.error(res.data?.message ?? "Please check your details and try again.")
