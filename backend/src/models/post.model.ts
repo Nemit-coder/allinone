@@ -27,6 +27,29 @@ const postSchema = new mongoose.Schema<IPost>({
         ref: 'User',
         required: true
     },
+    likes: {
+        type: mongoose.Types.ObjectId,
+        ref: 'User',
+        default: []
+    },
+    comments: [
+        {
+            user: {
+            type: mongoose.Types.ObjectId,
+            ref: 'User',
+            required: true
+            },
+
+            text: {
+                type: String,
+                required: true
+            },
+            createdAt: {
+                type: Date,
+                default: Date.now
+            }
+        }
+    ],
     createdAt: {
         type: Date,
         default: Date.now

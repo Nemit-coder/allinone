@@ -8,6 +8,12 @@ export interface IPost extends Document {
     title: string,
     tags: string[],
     description? :string,
+    likes: mongoose.Types.ObjectId,
+    comments: {
+        user: mongoose.Types.ObjectId,
+        text: string,
+        createdAt: Date
+    }
     uploadedBy: mongoose.Types.ObjectId
     createdAt: Date
 }

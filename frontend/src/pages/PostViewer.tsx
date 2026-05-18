@@ -105,10 +105,10 @@ export default function PostViewer({ isAuthenticated }: PostDetailProps) {
                 {post.type}
               </span>
 
-              <h1 className="text-2xl font-bold leading-snug">{post.title}</h1>
+              <h1 className="text-2xl font-bold leading-snug pt-2">{post.title}</h1>
 
               {post.description && (
-                <p className="text-muted-foreground leading-relaxed">{post.description}</p>
+                <p className="text-muted-foreground leading-relaxed pb-2">{post.description}</p>
               )}
 
               {post.tags && post.tags.length > 0 && (
@@ -121,7 +121,7 @@ export default function PostViewer({ isAuthenticated }: PostDetailProps) {
                 </div>
               )}
 
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-muted-foreground py-2">
                 Posted on {new Date(post.createdAt).toLocaleDateString()}
               </p>
               <div className="flex items-center gap-2">
