@@ -1,5 +1,5 @@
 import express from 'express'
-import { uploadPost , getPosts, getPostStats} from '../controllers/post.controller.ts'
+import { uploadPost , getPosts, getPostStats, toggleLike, addComment, deleteComment} from '../controllers/post.controller.ts'
 import verifyJwt from '../middlewares/auth.middleware.ts'
 import { multipleImageUpload , singleVideoUpload} from '../middlewares/upload.ts';
 import multer from 'multer'
@@ -15,6 +15,10 @@ router
 .get('/getPosts', verifyJwt, getPosts)
 .get('/getPosts/:id',verifyJwt,  getPosts)
 .get('/getPostStats', verifyJwt, getPostStats)
+
+.post('/posts/:id/like', verifyJwt, toggleLike)
+.post('/posts/:id/comment', verifyJwt, addComment)
+.delete('/posts/:id/comment/:commentId', verifyJwt, deleteComment)
 
 
 export default router
