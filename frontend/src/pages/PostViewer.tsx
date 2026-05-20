@@ -75,6 +75,9 @@ export default function PostViewer({ isAuthenticated }: PostDetailProps) {
   const [likeCount, setLikeCount] = useState(0)
   const [liking, setLiking]       = useState(false)
 
+  // carousel
+  const [currentSlide, setCurrentSlide] = useState(0)
+
   // comments
   const [commentText, setCommentText] = useState("")
   const [submitting, setSubmitting]   = useState(false)
@@ -180,6 +183,12 @@ export default function PostViewer({ isAuthenticated }: PostDetailProps) {
     }
   }
 
+  // ── Carousel navigation ──────────────────────────────────────────────────────
+  const prevSlide = () =>
+    setCurrentSlide((i) => (i === 0 ? (post?.media.length ?? 1) - 1 : i - 1))
+  const nextSlide = () =>
+    setCurrentSlide((i) => (i === (post?.media.length ?? 1) - 1 ? 0 : i + 1))
+
   // ─────────────────────────────────────────────────────────────────────────────
 
   return (
@@ -207,12 +216,67 @@ export default function PostViewer({ isAuthenticated }: PostDetailProps) {
 
             {/* ── Media ── */}
             {post.type === "image" && post.media.length > 0 && (
-              <div className="rounded-xl overflow-hidden bg-muted">
-                <img
-                  src={post.media[0]}
-                  alt={post.title}
-                  className="w-full object-contain max-h-[70vh]"
-                />
+              <div className="relative rounded-xl overflow-hidden bg-muted group select-none">
+                {/* Slides */}
+                <div
+                  className="flex transition-transform duration-300 ease-in-out"
+                  style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+                >
+                  {post.media.map((src, i) => (
+                    <img
+                      key={i}
+                      src={src}
+                      alt={`${post.title} ${i + 1}`}
+                      className="w-full flex-shrink-0 object-contain max-h-[70vh]"
+                    />
+                  ))}
+                </div>
+
+                {/* Arrows — only shown when more than one image */}
+                {post.media.length > 1 && (
+                  <>
+                    <button
+                      onClick={prevSlide}
+                      className="absolute left-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full
+                        bg-black/50 text-white flex items-center justify-center
+                        opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/70"
+                      aria-label="Previous image"
+                    >
+                      ‹
+                    </button>
+                    <button
+                      onClick={nextSlide}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full
+                        bg-black/50 text-white flex items-center justify-center
+                        opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/70"
+                      aria-label="Next image"
+                    >
+                      ›
+                    </button>
+
+                    {/* Counter badge */}
+                    <span className="absolute top-2 right-2 text-xs bg-black/50 text-white
+                      px-2 py-0.5 rounded-full">
+                      {currentSlide + 1} / {post.media.length}
+                    </span>
+
+                    {/* Dot indicators */}
+                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
+                      {post.media.map((_, i) => (
+                        <button
+                          key={i}
+                          onClick={() => setCurrentSlide(i)}
+                          className={`h-1.5 rounded-full transition-all ${
+                            i === currentSlide
+                              ? "w-4 bg-white"
+                              : "w-1.5 bg-white/50 hover:bg-white/80"
+                          }`}
+                          aria-label={`Go to image ${i + 1}`}
+                        />
+                      ))}
+                    </div>
+                  </>
+                )}
               </div>
             )}
 
@@ -274,21 +338,6 @@ export default function PostViewer({ isAuthenticated }: PostDetailProps) {
                 <p className="text-xs text-muted-foreground">{post.uploadedBy.userName}</p>
               </div>
             </div>
-
-            {/* ── Extra images ── */}
-            {post.type === "image" && post.media.length > 1 && (
-              <div className="grid grid-cols-2 gap-3">
-                {post.media.slice(1).map((src, i) => (
-                  <div key={i} className="rounded-lg overflow-hidden bg-muted">
-                    <img
-                      src={src}
-                      alt={`${post.title} ${i + 2}`}
-                      className="w-full h-48 object-cover"
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
 
             {/* ── Like & comment count bar ──────────────────────────────────── */}
             <div className="flex items-center gap-5 pt-2 border-t border-border">
