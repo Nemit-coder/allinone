@@ -18,6 +18,7 @@ import VideoUpload from "./pages/VideoUpload"
 import ImageUpload from "./pages/ImageUpload"
 import BlogUpload from "./pages/BlogUpload"
 import About from "./pages/About"
+import PublicProfile from "./pages/PublicProfile"
 import AuthCallback from "./pages/AuthCallback"
 import { Toaster } from "react-hot-toast"
 import ProtectedRoute from "./components/ProtectedRoute"
@@ -41,6 +42,14 @@ function App() {
         <Route path="/forget-password-email" element={<ForgetPasswordEmail />}/>
         <Route path="/reset-password" element={<ResetPassword />}/>
         <Route path="/auth/callback" element={<AuthCallback />} />
+        <Route
+        path="/publicprofile"
+        element={
+          <ProtectedRoute>
+            <PublicProfile isAuthenticated={isAuthenticated} />
+          </ProtectedRoute>
+        }
+        />
         <Route
          path="/post/:id"
          element={
