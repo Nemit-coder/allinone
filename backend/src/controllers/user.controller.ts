@@ -105,33 +105,30 @@ const registerUser = async (req : Request, res : Response) => {
     }
 }
 
-/* ===== Fetch Current User ===== */
-// const getCurrentUser = async (req: Request, res: Response) => {
-//     try {
-//         const userId = req.user!.id
-//         if (!userId) {
-//         return res.status(401).json({ message: "Authentication required" })
-//         }
+/* ===== Fetch Public Profile User ===== */
+const getPubllicProfileUser = async (req: Request, res: Response) => {
+    try {
+       const {id} = req.params
 
-//         // Getting user from document
-//         const user = await User.findById(userId).select('-refreshToken')
+        const PublicProfileUser = await User.findById(id).select('-refreshToken')
 
-//         if (!user) {
-//             return res.status(404).json({
-//                 success: false,
-//                 message: "User not found"
-//             })
-//         }
+        if (!PublicProfileUser) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            })
+        }
 
-//         res.status(200).json({
-//             success: true,
-//             user
-//         })
-//     } catch (error: any) {
-//         // console.log(`Server Error : ${error.message}`)
-//         res.status(500).json({ message: `Server Error : ${error.message}` })
-//     }
-// }
+        console.log(PublicProfileUser)
+        res.status(200).json({
+            success: true,
+            PublicProfileUser
+        })
+    } catch (error: any) {
+        // console.log(`Server Error : ${error.message}`)
+        res.status(500).json({ message: `Server Error : ${error.message}` })
+    }
+}
 
 const getCurrentUser = async (req: Request, res: Response) => {
     try {
@@ -327,6 +324,7 @@ export {
     loginUser,
     getUser,
     getCurrentUser,
+    getPubllicProfileUser,
     updateUserProfile,
     deleteUser
 }

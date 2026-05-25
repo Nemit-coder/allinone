@@ -4,10 +4,9 @@ import AppLayout from "../components/AppLayout"
 import api from "../lib/api"
 import { ArrowLeft, Heart, MessageCircle, Send, Trash2 } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar"
+import { Link } from 'react-router-dom'
 
 
-// ─── Helper: decode userId from your JWT stored in localStorage ───────────────
-// Your JWT payload shape is { id, iat, exp } — set by generateAccessToken(id)
 const getCurrentUserId = (): string => {
   try {
     const token = localStorage.getItem("accessToken")
@@ -84,6 +83,7 @@ export default function PostViewer({ isAuthenticated }: PostDetailProps) {
   const [deletingId, setDeletingId]   = useState<string | null>(null)
   const commentInputRef = useRef<HTMLTextAreaElement>(null)
 
+
   // ── Fetch post ──────────────────────────────────────────────────────────────
   useEffect(() => {
     if (!id) return
@@ -103,6 +103,7 @@ export default function PostViewer({ isAuthenticated }: PostDetailProps) {
       .catch(() => setError("Failed to load post."))
       .finally(() => setIsLoading(false))
   }, [id])
+
 
   // ── Like toggle ─────────────────────────────────────────────────────────────
   const handleLike = async () => {
@@ -326,7 +327,8 @@ export default function PostViewer({ isAuthenticated }: PostDetailProps) {
                 Posted on {new Date(post.createdAt).toLocaleDateString()}
               </p>
 
-              <div className="flex items-center gap-2">
+              <div className="gap-2">
+                <Link to={`/publicprofile/uploadedby/${post.uploadedBy._id}`} className="flex items-center gap-2">
                 <Avatar className="h-9 w-9" key={post.uploadedBy.avatar.url || "fallback"}>
                   {post.uploadedBy.avatar ? (
                     <AvatarImage src={post.uploadedBy.avatar.url} alt="User" />
@@ -336,6 +338,7 @@ export default function PostViewer({ isAuthenticated }: PostDetailProps) {
                   </AvatarFallback>
                 </Avatar>
                 <p className="text-xs text-muted-foreground">{post.uploadedBy.userName}</p>
+                </Link>
               </div>
             </div>
 
