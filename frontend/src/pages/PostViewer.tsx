@@ -238,7 +238,7 @@ export default function PostViewer({ isAuthenticated }: PostDetailProps) {
                   <>
                     <button
                       onClick={prevSlide}
-                      className="absolute left-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full
+                      className="text-2xl absolute left-2 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full
                         bg-black/50 text-white flex items-center justify-center
                         opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/70"
                       aria-label="Previous image"
@@ -247,7 +247,7 @@ export default function PostViewer({ isAuthenticated }: PostDetailProps) {
                     </button>
                     <button
                       onClick={nextSlide}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full
+                      className="text-2xl absolute right-2 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full
                         bg-black/50 text-white flex items-center justify-center
                         opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/70"
                       aria-label="Next image"
@@ -328,7 +328,7 @@ export default function PostViewer({ isAuthenticated }: PostDetailProps) {
               </p>
 
               <div className="gap-2">
-                <Link to={`/publicprofile/uploadedby/${post.uploadedBy._id}`} className="flex items-center gap-2">
+                <Link to={`/publicprofile/${post.uploadedBy._id}`} className="flex items-center gap-2">
                 <Avatar className="h-9 w-9" key={post.uploadedBy.avatar.url || "fallback"}>
                   {post.uploadedBy.avatar ? (
                     <AvatarImage src={post.uploadedBy.avatar.url} alt="User" />

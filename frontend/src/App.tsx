@@ -43,7 +43,7 @@ function App() {
         <Route path="/reset-password" element={<ResetPassword />}/>
         <Route path="/auth/callback" element={<AuthCallback />} />
         <Route
-        path="/publicprofile/uploadedby/:id"
+        path="/publicprofile/:id"
         element={
           <ProtectedRoute>
             <PublicProfile isAuthenticated={isAuthenticated} />
