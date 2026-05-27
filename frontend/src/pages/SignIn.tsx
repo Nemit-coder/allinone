@@ -66,7 +66,7 @@ export default function SignIn({ onSignIn }: SignInProps) {
   }
 
   const handleGoogleSignIn = () => {
-    window.location.href = "http://localhost:3000/api/v1/auth/google"
+    window.location.href = "https://allinone-1-fjja.onrender.com/api/v1/auth/google"
   }
 
   return (
