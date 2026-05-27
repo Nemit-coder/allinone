@@ -17,7 +17,10 @@ app.use('/uploads', express.static(path.join(process.cwd(), 'public/uploads')));
 
 
 app.use(cors({
-    origin: "https://allinone-6wvd.vercel.app",
+    origin: [
+    "https://allinone-6wvd.vercel.app",
+    "http://localhost:5173"
+  ],
     credentials: true
   }))
 
