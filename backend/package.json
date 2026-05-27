@@ -7,7 +7,7 @@
   "type": "module",
   "main": "server.ts",
   "scripts": {
-    "start": "npx tsx server.ts",
+    "start": "./node_modules/.bin/tsx server.ts",
     "dev": "tsx watch server.ts"
   },
   "dependencies": {
