@@ -52,7 +52,7 @@ export const getAccessToken = (): string | null => {
 }
 
 const api = axios.create({
-  baseURL: "http://localhost:3000/api/v1",
+  baseURL: (import.meta as any).env.VITE_API_URL,
   withCredentials: true, // REQUIRED for refresh cookie
 })
 
