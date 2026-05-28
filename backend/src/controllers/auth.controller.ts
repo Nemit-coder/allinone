@@ -42,7 +42,7 @@ export const logoutUser = async (req: Request, res: Response) => {
     res.clearCookie("refreshToken", {
       httpOnly: true,
       secure: true,
-      sameSite: "strict"
+      sameSite: "none"
     })
   
     res.status(200).json({ success: true })
