@@ -49,7 +49,7 @@ router.get(
 
     // redirect back to frontend
     res.redirect(
-      `http://localhost:5173/auth/callback?token=${accessToken}`
+      `https://nemitsagar.dpdns.org/auth/callback?token=${accessToken}`
     )
   }
 )
