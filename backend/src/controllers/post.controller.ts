@@ -75,11 +75,12 @@ const uploadPost = async (req: Request, res: Response) => {
 
 const getPosts = async (req: Request, res: Response) => {
   try {
-    const { type } = req.query
+    const { type, userId } = req.query
     const { id } = req.params
 
     const filter: any = {}
     if (type) filter.type = type
+    if (userId) filter.uploadedBy = userId
 
     if (id) {
       const post = await Post.findById(id)

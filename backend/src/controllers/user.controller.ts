@@ -119,7 +119,7 @@ const getPubllicProfileUser = async (req: Request, res: Response) => {
             })
         }
 
-        console.log(PublicProfileUser)
+        // console.log(PublicProfileUser)
         res.status(200).json({
             success: true,
             PublicProfileUser

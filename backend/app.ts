@@ -19,8 +19,10 @@ app.use('/uploads', express.static(path.join(process.cwd(), 'public/uploads')));
 app.use(cors({
     origin: [
     "https://nemitsagar.dpdns.org",
-    // "https://allinone-6wvd.vercel.app",
-    // "http://localhost:5173"
+    "https://api.nemitsagar.dpdns.org",
+    "https://allinone-6wvd.vercel.app",
+    "http://localhost:5173",
+    "http://localhost:3000"
   ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
