@@ -8,7 +8,7 @@ passport.use(
     {
       clientID: env.GOOGLE_CLIENT_ID!,
       clientSecret: env.GOOGLE_CLIENT_SECRET!,
-      callbackURL: "https:/api.nemitsagar.dpdns.org//api/v1/auth/google/callback",
+      callbackURL: "https://api.nemitsagar.dpdns.org/api/v1/auth/google/callback",
     },
     async (accessToken, refreshToken, profile, done) => {
       try {

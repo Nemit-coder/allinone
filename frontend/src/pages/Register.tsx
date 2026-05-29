@@ -95,7 +95,7 @@ export default function RegisterPage() {
   }
 
   const handleGoogleSignUp = () => {
-   window.location.href = "https:/api.nemitsagar.dpdns.org//api/v1/auth/google"
+   window.location.href = "https://api.nemitsagar.dpdns.org/api/v1/auth/google"
   }
 
   return (
