@@ -11,27 +11,35 @@ interface PublicProfileProps {
 }
 
 interface User {
-    userName: string,
-    fullName: string,
+    userName: string
+    fullName: string
     avatar: {
-        url: string,
+        url: string
         publicId: string
-    },
+    }
+    followersCount: number
+    followingCount: number
 }
 
 interface Post {
-  _id: string
-  type: "image" | "video" | "blog"
-  media: string[]
-  title: string
-  description?: string
-  tags?: string[]
-  uploadedBy: {
     _id: string
-    userName: string
-    avatar: string
-  }
-  createdAt: string
+    type: "image" | "video" | "blog"
+    media: string[]
+    title: string
+    description?: string
+    tags?: string[]
+    uploadedBy: {
+        _id: string
+        userName: string
+        avatar: string
+    }
+    createdAt: string
+}
+
+interface PostStats {
+    images: number
+    videos: number
+    blogs: number
 }
 
 type PostType = "all" | "image" | "video" | "blog"
@@ -52,6 +60,28 @@ export default function PublicProfile({ isAuthenticated }: PublicProfileProps) {
     const [filter, setFilter] = useState<PostType>("all")
     const [posts, setPosts] = useState<Post[]>([])
     const [postsLoading, setPostsLoading] = useState(false)
+    const [stats, setStats] = useState<PostStats>({ images: 0, videos: 0, blogs: 0 })
+
+    useEffect(() => {
+        if (!id) return
+        setIsLoading(true)
+        api.get(`/users/PublicProfileUser/${id}`)
+            .then((res) => {
+                if (res.data?.success) setUser(res.data.PublicProfileUser)
+                else console.log("Error no user found")
+            })
+            .catch((err) => console.log("Failed to fetch user", err))
+            .finally(() => setIsLoading(false))
+    }, [id])
+
+    useEffect(() => {
+        if (!id) return
+        api.get(`/create/getPostStats/${id}`)
+            .then((res) => {
+                if (res.data?.success) setStats(res.data.stats)
+            })
+            .catch((err) => console.error("Stats fetch error:", err))
+    }, [id])
 
     useEffect(() => {
         if (!id) return
@@ -66,21 +96,7 @@ export default function PublicProfile({ isAuthenticated }: PublicProfileProps) {
             .finally(() => setPostsLoading(false))
     }, [id, filter])
 
-    useEffect(() => {
-        if (!id) return
-        setIsLoading(true)
-        api.get(`/users/PublicProfileUser/${id}`)
-            .then((res) => {
-                if (res.data?.success) {
-                    const u: User = res.data.PublicProfileUser
-                    setUser(u)
-                } else {
-                    console.log("Error no user found")
-                }
-            })
-            .catch((err) => console.log("Failed to fetch user", err))
-            .finally(() => setIsLoading(false))
-    }, [id])
+    const totalPosts = stats.images + stats.videos + stats.blogs
 
     return (
         <AppLayout isAuthenticated={isAuthenticated}>
@@ -95,37 +111,55 @@ export default function PublicProfile({ isAuthenticated }: PublicProfileProps) {
                 </button>
 
                 {/* Profile card */}
-                <div className="rounded-2xl border border-border bg-card p-4 sm:p-5 shadow-sm">
-                    <div className="flex items-center gap-3">
+                <div className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden">
 
-                        {/* Avatar — shrinks on mobile */}
-                        <Avatar className="h-10 w-10 sm:h-16 sm:w-16 shrink-0" key={user?.avatar?.url || "fallback"}>
+                    {/* Top section — avatar, name, follow */}
+                    <div className="flex items-center gap-4 p-4 sm:p-6">
+
+                        <Avatar className="h-14 w-14 sm:h-20 sm:w-20 shrink-0 ring-2 ring-border" key={user?.avatar?.url || "fallback"}>
                             {user?.avatar?.url ? (
                                 <AvatarImage src={user.avatar.url} alt="User avatar" />
                             ) : null}
-                            <AvatarFallback className="text-sm sm:text-2xl">
+                            <AvatarFallback className="text-lg sm:text-3xl">
                                 {user?.userName?.[0]?.toUpperCase() || "U"}
                             </AvatarFallback>
                         </Avatar>
 
-                        {/* Name + username */}
-                        <div className="flex flex-col gap-0.5 min-w-0 flex-1">
-                            <h3 className="text-sm sm:text-base font-semibold leading-tight truncate">
+                        <div className="flex-1 min-w-0">
+                            <h2 className="text-base sm:text-lg font-bold leading-tight truncate">
                                 {user?.fullName || (isLoading ? "Loading..." : "Unknown User")}
-                            </h3>
-                            <div className="flex items-center gap-1 text-xs text-muted-foreground flex-wrap">
-                                <span className="truncate">@{user?.userName}</span>
-                                <span>•</span>
-                                <span className="whitespace-nowrap">0 Followers</span>
-                            </div>
+                            </h2>
+                            <p className="text-xs sm:text-sm text-muted-foreground truncate mt-0.5">
+                                @{user?.userName}
+                            </p>
                         </div>
 
-                        {/* Follow button */}
-                        <button className="shrink-0 bg-black text-white text-xs sm:text-sm font-medium px-3 sm:px-4 h-7 sm:h-8 rounded-lg hover:bg-neutral-800 transition-colors">
+                        <button className="shrink-0 bg-primary text-primary-foreground text-xs sm:text-sm font-semibold px-4 sm:px-5 h-8 sm:h-9 rounded-lg hover:opacity-90 transition-opacity">
                             Follow
                         </button>
 
                     </div>
+
+                    {/* Divider */}
+                    <div className="border-t border-border" />
+
+                    {/* Stats row */}
+                    <div className="grid grid-cols-6 divide-x divide-border">
+                        {[
+                            { label: "Posts",   value: totalPosts    },
+                            { label: "Images",  value: stats.images  },
+                            { label: "Videos",  value: stats.videos  },
+                            { label: "Blogs",   value: stats.blogs   },
+                            { label: "Followers", value: user?.followersCount ?? 0 },
+                            { label: "Following", value: user?.followingCount ?? 0 },
+                        ].map(({ label, value }) => (
+                            <div key={label} className="flex flex-col items-center py-3 sm:py-4 gap-0.5">
+                                <span className="text-sm sm:text-base font-bold text-foreground">{value}</span>
+                                <span className="text-[10px] sm:text-xs text-muted-foreground">{label}</span>
+                            </div>
+                        ))}
+                    </div>
+
                 </div>
 
                 {/* Filter bar */}
@@ -145,18 +179,18 @@ export default function PublicProfile({ isAuthenticated }: PublicProfileProps) {
                     ))}
                 </div>
 
-                {/* Posts will go here */}
+                {/* Posts grid */}
                 {postsLoading ? (
-             <div className="text-center text-muted-foreground py-20">Loading...</div>
-            ) : posts.length === 0 ? (
-                <div className="text-center text-muted-foreground py-20">No posts found.</div>
-            ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
-                    {posts.map((post) => (
-                        <PostCard key={post._id} post={post} />
-                    ))}
-                </div>
-            )}                                                                          
+                    <div className="text-center text-muted-foreground py-20">Loading...</div>
+                ) : posts.length === 0 ? (
+                    <div className="text-center text-muted-foreground py-20">No posts found.</div>
+                ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+                        {posts.map((post) => (
+                            <PostCard key={post._id} post={post} />
+                        ))}
+                    </div>
+                )}
 
             </div>
         </AppLayout>

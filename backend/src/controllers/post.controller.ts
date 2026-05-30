@@ -116,7 +116,7 @@ const getPosts = async (req: Request, res: Response) => {
 
 const getPostStats = async (req: Request, res: Response) => {
   try {
-    const userId = req.user!.id
+    const userId = req.params.userId ?? req.user!.id
 
     const stats = await Post.aggregate([
       {
@@ -142,6 +142,7 @@ const getPostStats = async (req: Request, res: Response) => {
     })
 
     res.status(200).json({ success: true, stats: result })
+    console.log(result)
 
   } catch (error: any) {
     res.status(500).json({ success: false, message: error.message })

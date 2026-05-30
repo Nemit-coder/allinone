@@ -38,6 +38,16 @@ const userSchema = new mongoose.Schema<IUser>({
     resetPasswordExpires: {
         type: Date,
     },
+    followers: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: []
+    }],
+    following: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        default: []
+    }],             
 })
 
 const User = mongoose.model<IUser>('User', userSchema)

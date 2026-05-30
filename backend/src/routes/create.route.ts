@@ -15,6 +15,7 @@ router
 .get('/getPosts', verifyJwt, getPosts)
 .get('/getPosts/:id',verifyJwt,  getPosts)
 .get('/getPostStats', verifyJwt, getPostStats)
+.get('/getPostStats/:userId', verifyJwt, getPostStats)
 
 .post('/posts/:id/like', verifyJwt, toggleLike)
 .post('/posts/:id/comment', verifyJwt, addComment)

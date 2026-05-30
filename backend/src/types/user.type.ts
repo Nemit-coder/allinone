@@ -1,4 +1,4 @@
-import { Document } from "mongoose";
+import { Document, Types } from "mongoose";
 
 export interface IUser extends Document {
     userName: string,
@@ -11,5 +11,7 @@ export interface IUser extends Document {
     },
     refreshToken?: string,
     resetPasswordCode?: string,
-    resetPasswordExpires?: Date
+    resetPasswordExpires?: Date,
+    followers: Types.ObjectId[],
+    following: Types.ObjectId[]
 }
