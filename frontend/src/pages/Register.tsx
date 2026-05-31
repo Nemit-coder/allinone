@@ -19,6 +19,7 @@ export default function RegisterPage() {
     email: "",
     password: "",
   })
+  const [accountType, setAccountType] = useState<"public" | "private">("public")
   const [avatarPreview, setAvatarPreview] = useState<string>("")
   const [isLoading, setIsLoading] = useState(false)
   const [avatarFile, setAvatarFile] = useState<File | null>(null); 
@@ -53,6 +54,7 @@ export default function RegisterPage() {
     submitData.append('fullName', formData.fullname);
     submitData.append('email', formData.email);
     submitData.append('password', formData.password);
+    submitData.append('accountType', accountType)
     
     // Add avatar file (not data URL)
     if (avatarFile) {  // You'll store file ref, see below
@@ -181,6 +183,39 @@ export default function RegisterPage() {
                   disabled={isLoading}
                 />
               </div>
+
+              <div className="space-y-2">
+                <Label>Account Type</Label>
+                <div className="flex rounded-lg border border-border overflow-hidden">
+                    <button
+                        type="button"
+                        onClick={() => setAccountType("public")}
+                        className={`flex-1 py-2 text-sm font-medium transition-colors
+                            ${accountType === "public"
+                                ? "bg-primary text-primary-foreground"
+                                : "bg-transparent text-muted-foreground hover:text-foreground"
+                            }`}
+                    >
+                        🌍 Public
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setAccountType("private")}
+                        className={`flex-1 py-2 text-sm font-medium transition-colors
+                            ${accountType === "private"
+                                ? "bg-primary text-primary-foreground"
+                                : "bg-transparent text-muted-foreground hover:text-foreground"
+                            }`}
+                    >
+                        🔒 Private
+                    </button>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                    {accountType === "public"
+                        ? "Anyone can see your posts and profile."
+                        : "Only approved followers can see your posts."}
+                </p>
+            </div>
 
               <Button type="submit" className="w-full" disabled={isLoading}>
                 Create account

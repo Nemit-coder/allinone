@@ -7,12 +7,11 @@ import { generateAccessToken, generateRefreshToken } from "../utils/token.ts"
  /* ===== Register ===== */
 const registerUser = async (req : Request, res : Response) => {
     try {        
-        const {userName, fullName, email, password} = req.body
+        const {userName, fullName, email, password, accountType} = req.body
 
           const avatarUrl = req.file?.path ?? ""
           const avatarPublicId = req.file?.filename ?? ""
           
-        // ==> Validating Required Fields
         if (!email || !password || !userName || !fullName) {
             return res.status(400).json({
                 success: false,
@@ -20,7 +19,6 @@ const registerUser = async (req : Request, res : Response) => {
             })
        }
 
-       // ==> Validating Email (regex)
        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
        if(!emailRegex.test(email)){
             return res.status(400).json({
@@ -29,7 +27,6 @@ const registerUser = async (req : Request, res : Response) => {
         })
        }
 
-       // ==> Validating Password Length
         if (password.length < 6) {
         return res.status(400).json({
             success: false,
@@ -37,7 +34,6 @@ const registerUser = async (req : Request, res : Response) => {
         })
         }
 
-        // ==> Checking if user already exist
         const normalizedEmail = email.toLowerCase()
 
         const fetchedUser = await User.findOne({email})
@@ -48,13 +44,10 @@ const registerUser = async (req : Request, res : Response) => {
              })
         }
 
-        // ==> Hashing the plain password
         const saltRounds = 10
         const actualSalt = await bcrypt.genSalt(saltRounds)
         const passwordHash = await bcrypt.hash(password, actualSalt)
-        
 
-        // ==> Creating final user
         const createUser = await User.create({
             userName: userName,
             fullName: fullName,
@@ -63,8 +56,8 @@ const registerUser = async (req : Request, res : Response) => {
             avatar: {
                 url: avatarUrl,
                 publicId: avatarPublicId
-            }
-            // refreshToken: refreshToken
+            },
+            accountType: accountType === "private" ? "private" : "public",
         })
 
         if(!createUser){
@@ -74,7 +67,6 @@ const registerUser = async (req : Request, res : Response) => {
              })
         }
 
-        // Generate tokens for automatic login after registration
         const accessToken = generateAccessToken(createUser._id.toString())
         const refreshToken = generateRefreshToken(createUser._id.toString())
 
@@ -88,7 +80,6 @@ const registerUser = async (req : Request, res : Response) => {
             maxAge: 7 * 24 * 60 * 60 * 1000
         })
         
-        // console.log(`User created successfully : ${createUser.userName}`)
         return res.status(200).json({ 
             success: true,
             message: 'User Created Successfully',
@@ -100,7 +91,6 @@ const registerUser = async (req : Request, res : Response) => {
             }
         })
     } catch (error : any) {
-        // console.log(`Server Error : ${error.message}`)
         res.status(500).json({ message: `Server Error : ${error.message}` })
     }
 }
@@ -109,6 +99,10 @@ const registerUser = async (req : Request, res : Response) => {
 const getPubllicProfileUser = async (req: Request, res: Response) => {
     try {
         const { id } = req.params
+        if (!id) {
+            return res.status(400).json({ success: false, message: "User ID is required" })
+        }
+        const currentId = req.user!.id  // available because verifyJwt is on this route
 
         const PublicProfileUser = await User.findById(id)
             .select('-refreshToken -password -resetPasswordCode -resetPasswordExpires')
@@ -117,12 +111,25 @@ const getPubllicProfileUser = async (req: Request, res: Response) => {
             return res.status(404).json({ success: false, message: "User not found" })
         }
 
+        const isOwnProfile = currentId.toString() === id.toString()
+
+        const isFollowing = PublicProfileUser.followers.some(
+            (fId) => fId.toString() === currentId.toString()
+        )
+
+        const isRequested = PublicProfileUser.followRequests.some(
+            (fId) => fId.toString() === currentId.toString()
+        )
+
         res.status(200).json({
             success: true,
             PublicProfileUser: {
                 ...PublicProfileUser.toObject(),
                 followersCount: PublicProfileUser.followers?.length ?? 0,
                 followingCount: PublicProfileUser.following?.length ?? 0,
+                isOwnProfile,
+                isFollowing,
+                isRequested,
             }
         })
     } catch (error: any) {
@@ -159,10 +166,8 @@ const getCurrentUser = async (req: Request, res: Response) => {
 /* ===== Fetch User ===== */
 const getUser = async (req : Request, res: Response) => {
     try {
-        // ==> Fetching user
         const fetchedUser = await User.find()
         if(!fetchedUser){
-            // console.log('Error finding users')
             return res.json({
                 success: false,
                 message: "Error finding users"
@@ -174,7 +179,6 @@ const getUser = async (req : Request, res: Response) => {
             users : fetchedUser
         })
     } catch (error: any) {
-        // console.log(`Server Error : ${error.message}`)
         res.status(500).json({ message: `Server Error : ${error.message}` })
     }
 }
@@ -185,24 +189,14 @@ const loginUser = async (req: Request, res : Response) => {
         const {email, password} = req.body
         const fetchedUser = await User.findOne({email})
         if(!fetchedUser) {
-            // console.log("User not found")
             return res.status(404).json({message: "User not found"})
         }
 
-        // ==> Decoding password
         const decodedPassword = await bcrypt.compare(password, fetchedUser.password ?? "")
         if(!decodedPassword){
-            // console.log("password incorrect")
             return res.status(401).json({message: "Invalid Password"})
         }
 
-        // ==> Payload
-        // const payload = {
-        //     id: fetchedUser._id,
-        //     email : fetchedUser.email,
-        //     userName: fetchedUser.userName
-        // }
-        // ==> Token Signing
         const accessToken = generateAccessToken(fetchedUser._id.toString())
         const refreshToken = generateRefreshToken(fetchedUser._id.toString())
 
@@ -223,7 +217,6 @@ const loginUser = async (req: Request, res : Response) => {
             user: fetchedUser
         });
     } catch (error : any) {
-        // console.log(error.message)
         res.status(500).json({message : `Server Error : ${error.message}`})
     }
 }
@@ -234,22 +227,18 @@ const updateUserProfile = async (req: Request, res : Response) => {
         const userId = req.user!.id
         const {email, userName, fullName , password} = req.body
          const updateData: any = {}
-         
 
-         // ==> Checking if Fields are given for update
         if (email) updateData.email = email.toLowerCase()
         if (userName) updateData.userName = userName
         if (fullName) updateData.fullName = fullName
         if (password) updateData.password = password
 
          if (req.file) {
-        // ✅ Delete old avatar from Cloudinary before saving new one
         const existingUser = await User.findById(userId)
         if (existingUser?.avatar?.publicId) {
             await cloudinary.uploader.destroy(existingUser.avatar.publicId)
         }
 
-        // ✅ Save new Cloudinary avatar
         updateData.avatar = {
             url: req.file.path,
             publicId: req.file.filename
@@ -286,7 +275,6 @@ const updateUserProfile = async (req: Request, res : Response) => {
         })
 
     } catch (error : any) {
-        // console.log(error.message)
         res.status(500).json({
             success: false,
             message : `Server Error : ${error.message}`})
@@ -311,20 +299,137 @@ const deleteUser = async (req: Request, res: Response) => {
             message: "User was deleted successfully"
         })
     } catch (error: any) {
-        // console.log(error.message)
         res.status(500).json({
             success: true,
             message : `Server Error : ${error.message}`})
     }
 }
 
+/* ===== Follow / Unfollow ===== */
+const followUser = async (req: Request, res: Response) => {
+    try {
+        const targetId = req.params.id
+        const currentId = req.user!.id
+
+        if (targetId === currentId.toString()) {
+            return res.status(400).json({ success: false, message: "You cannot follow yourself" })
+        }
+
+        const targetUser = await User.findById(targetId)
+        const currentUser = await User.findById(currentId)
+
+        if (!targetUser || !currentUser) {
+            return res.status(404).json({ success: false, message: "User not found" })
+        }
+
+        const alreadyFollowing = targetUser.followers.some(
+            (fId) => fId.toString() === currentId.toString()
+        )
+        if (alreadyFollowing) {
+            return res.status(400).json({ success: false, message: "Already following" })
+        }
+
+        const alreadyRequested = targetUser.followRequests.some(
+            (fId) => fId.toString() === currentId.toString()
+        )
+        if (alreadyRequested) {
+            return res.status(400).json({ success: false, message: "Request already sent" })
+        }
+
+        if (targetUser.accountType === "private") {
+            await User.findByIdAndUpdate(targetId, {
+                $addToSet: { followRequests: currentId }
+            })
+            return res.status(200).json({ success: true, status: "requested" })
+        } else {
+            await User.findByIdAndUpdate(targetId, { $addToSet: { followers: currentId } })
+            await User.findByIdAndUpdate(currentId, { $addToSet: { following: targetId } })
+            return res.status(200).json({ success: true, status: "following" })
+        }
+
+    } catch (error: any) {
+        res.status(500).json({ success: false, message: error.message })
+    }
+}
+
+const unfollowUser = async (req: Request, res: Response) => {
+    try {
+        const targetId = req.params.id
+        const currentId = req.user!.id
+
+        await User.findByIdAndUpdate(targetId, {
+            $pull: { followers: currentId, followRequests: currentId }
+        })
+        await User.findByIdAndUpdate(currentId, {
+            $pull: { following: targetId }
+        })
+
+        return res.status(200).json({ success: true, status: "none" })
+    } catch (error: any) {
+        res.status(500).json({ success: false, message: error.message })
+    }
+}
+
+/* ===== Accept / Reject Follow Request ===== */
+const acceptFollowRequest = async (req: Request, res: Response) => {
+    try {
+        const requesterId = req.params.id
+        const currentId = req.user!.id
+
+        await User.findByIdAndUpdate(currentId, {
+            $pull: { followRequests: requesterId },
+            $addToSet: { followers: requesterId }
+        })
+        await User.findByIdAndUpdate(requesterId, {
+            $addToSet: { following: currentId }
+        })
+
+        return res.status(200).json({ success: true, message: "Follow request accepted" })
+    } catch (error: any) {
+        res.status(500).json({ success: false, message: error.message })
+    }
+}
+
+const rejectFollowRequest = async (req: Request, res: Response) => {
+    try {
+        const requesterId = req.params.id
+        const currentId = req.user!.id
+
+        await User.findByIdAndUpdate(currentId, {
+            $pull: { followRequests: requesterId }
+        })
+
+        return res.status(200).json({ success: true, message: "Follow request rejected" })
+    } catch (error: any) {
+        res.status(500).json({ success: false, message: error.message })
+    }
+}
+
+/* ===== Get Notifications ===== */
+const getNotifications = async (req: Request, res: Response) => {
+    try {
+        const currentId = req.user!.id
+
+        const user = await User.findById(currentId)
+            .populate('followRequests', 'userName fullName avatar')
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" })
+        }
+
+        return res.status(200).json({
+            success: true,
+            followRequests: user.followRequests,
+            count: user.followRequests.length
+        })
+    } catch (error: any) {
+        res.status(500).json({ success: false, message: error.message })
+    }
+}
+
 
 export {
-    registerUser,
-    loginUser,
-    getUser,
-    getCurrentUser,
-    getPubllicProfileUser,
-    updateUserProfile,
-    deleteUser
+    registerUser, loginUser, getUser, getCurrentUser,
+    getPubllicProfileUser, updateUserProfile, deleteUser,
+    followUser, unfollowUser, acceptFollowRequest, rejectFollowRequest, getNotifications
 }

@@ -13,5 +13,7 @@ export interface IUser extends Document {
     resetPasswordCode?: string,
     resetPasswordExpires?: Date,
     followers: Types.ObjectId[],
-    following: Types.ObjectId[]
+    following: Types.ObjectId[],
+    accountType: "public" | "private",
+    followRequests: Types.ObjectId[]
 }

@@ -25,6 +25,7 @@ import ProtectedRoute from "./components/ProtectedRoute"
 import PublicRoute from "./components/PublicRoute"
 import { getAccessToken } from "./lib/api"
 import PostViewer from "./pages/PostViewer"
+import Notifications from "./pages/Notifications"
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -42,6 +43,12 @@ function App() {
         <Route path="/forget-password-email" element={<ForgetPasswordEmail />}/>
         <Route path="/reset-password" element={<ResetPassword />}/>
         <Route path="/auth/callback" element={<AuthCallback />} />
+
+        <Route path="/notifications" element={
+            <ProtectedRoute>
+                <Notifications isAuthenticated={isAuthenticated} />
+            </ProtectedRoute>
+        } />
         <Route
         path="/publicprofile/:id"
         element={

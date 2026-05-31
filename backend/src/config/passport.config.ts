@@ -34,6 +34,7 @@ passport.use(
             url: profile.photos?.[0]?.value || "https://ui-avatars.com/api/?name=Google User",
             publicId: ""
           },
+          accountType: "public",
         });
         // // console.log(profile)
 

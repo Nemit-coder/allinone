@@ -1,6 +1,6 @@
 import type React from "react"
-import { Link, useLocation } from "react-router-dom"
-import { Home, MessageSquare, PlusCircle, Info, LogOut, LayoutDashboard, Menu, X } from "lucide-react"
+import { Link, useLocation, useNavigate } from "react-router-dom"
+import { Home, MessageSquare, PlusCircle, Info, LogOut, LayoutDashboard, Menu, X, Bell } from "lucide-react"
 import { Button } from "../components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar"
 import {
@@ -30,6 +30,9 @@ const NAV_LINKS = [
 export default function AppLayout({ children, isAuthenticated }: AppLayoutProps) {
   const [userData, setUserData] = useState<{ userName?: string; email?: string; avatar?: string } | null>(null)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [notifCount, setNotifCount] = useState(0)
+
+  const navigate = useNavigate()
 
   const handleLogout = async () => {
     try {
@@ -49,7 +52,6 @@ export default function AppLayout({ children, isAuthenticated }: AppLayoutProps)
   const isAuth = isAuthenticated || !!token
   const location = useLocation()
 
-  // Close mobile menu on route change
   useEffect(() => {
     setMobileMenuOpen(false)
   }, [location.pathname])
@@ -72,6 +74,13 @@ export default function AppLayout({ children, isAuthenticated }: AppLayoutProps)
             window.location.href = "/signin"
           }
         })
+
+      // Fetch notification count
+      api.get("/users/notifications")
+        .then((res) => {
+          if (res.data?.success) setNotifCount(res.data.count ?? 0)
+        })
+        .catch(() => {})
     }
   }, [isAuth, token])
 
@@ -115,10 +124,24 @@ export default function AppLayout({ children, isAuthenticated }: AppLayoutProps)
               </div>
             )}
 
-            {/* Right: Avatar or Sign In + Hamburger */}
+            {/* Right: Bell + Avatar or Sign In + Hamburger */}
             <div className="flex items-center gap-2">
               {isAuth ? (
                 <>
+                  {/* Notification Bell */}
+                  <button
+                    onClick={() => navigate("/notifications")}
+                    className="relative flex items-center justify-center h-9 w-9 rounded-md hover:bg-accent transition-colors"
+                    aria-label="Notifications"
+                  >
+                    <Bell className="h-5 w-5" />
+                    {notifCount > 0 && (
+                      <span className="absolute top-1 right-1 h-4 w-4 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center">
+                        {notifCount > 9 ? "9+" : notifCount}
+                      </span>
+                    )}
+                  </button>
+
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Avatar className="h-9 w-9 cursor-pointer" key={userData?.avatar || "fallback"}>
@@ -183,6 +206,23 @@ export default function AppLayout({ children, isAuthenticated }: AppLayoutProps)
                 {label}
               </Link>
             ))}
+            {/* Notifications link in mobile drawer too */}
+            <Link
+              to="/notifications"
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors
+                ${isActive("/notifications")
+                  ? "bg-secondary text-secondary-foreground"
+                  : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                }`}
+            >
+              <Bell className="h-4 w-4 shrink-0" />
+              Notifications
+              {notifCount > 0 && (
+                <span className="ml-auto h-5 w-5 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center">
+                  {notifCount > 9 ? "9+" : notifCount}
+                </span>
+              )}
+            </Link>
           </div>
         )}
       </nav>

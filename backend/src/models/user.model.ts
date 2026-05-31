@@ -32,6 +32,11 @@ const userSchema = new mongoose.Schema<IUser>({
     refreshToken: {
         type: String
     },
+    accountType: {
+    type: String,
+        enum: ["public", "private"],
+        default: "public"
+    },
     resetPasswordCode: {
         type: String
     },
@@ -44,6 +49,11 @@ const userSchema = new mongoose.Schema<IUser>({
     default: []
     }],
     following: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        default: []
+    }],
+    followRequests: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         default: []
