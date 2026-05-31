@@ -77,7 +77,7 @@ export default function Home({ isAuthenticated }: HomeProps) {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
             {posts.map((post) => (
-              <PostCard key={post._id} post={post} />
+              <PostCard key={post._id} post={post} showMultiIndicator={true}/>
             ))}
           </div>
         )}

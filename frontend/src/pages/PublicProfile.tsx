@@ -44,11 +44,11 @@ interface PostStats {
 
 type PostType = "all" | "image" | "video" | "blog"
 
-const FILTERS: { label: string; value: PostType }[] = [
-    { label: "All",    value: "all"   },
-    { label: "Images", value: "image" },
-    { label: "Videos", value: "video" },
-    { label: "Blogs",  value: "blog"  },
+const FILTERS: { label: string; value: PostType; statKey?: keyof PostStats | "total" }[] = [
+    { label: "All",    value: "all",   statKey: "total"   },
+    { label: "Images", value: "image", statKey: "images"  },
+    { label: "Videos", value: "video", statKey: "videos"  },
+    { label: "Blogs",  value: "blog",  statKey: "blogs"   },
 ]
 
 export default function PublicProfile({ isAuthenticated }: PublicProfileProps) {
@@ -68,7 +68,6 @@ export default function PublicProfile({ isAuthenticated }: PublicProfileProps) {
         api.get(`/users/PublicProfileUser/${id}`)
             .then((res) => {
                 if (res.data?.success) setUser(res.data.PublicProfileUser)
-                else console.log("Error no user found")
             })
             .catch((err) => console.log("Failed to fetch user", err))
             .finally(() => setIsLoading(false))
@@ -98,99 +97,119 @@ export default function PublicProfile({ isAuthenticated }: PublicProfileProps) {
 
     const totalPosts = stats.images + stats.videos + stats.blogs
 
+    const getStatValue = (statKey?: keyof PostStats | "total") => {
+        if (statKey === "total") return totalPosts
+        if (statKey) return stats[statKey]
+        return 0
+    }
+
     return (
         <AppLayout isAuthenticated={isAuthenticated}>
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
+            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-0">
 
                 {/* Back button */}
                 <button
                     onClick={() => navigate(-1)}
-                    className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-8"
                 >
                     <ArrowLeft className="h-4 w-4" /> Back
                 </button>
 
-                {/* Profile card */}
-                <div className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden">
+                {/* ── Profile Header ── */}
+                <div className="flex flex-col sm:flex-row sm:items-start gap-6 sm:gap-10 pb-8 border-b border-border">
 
-                    {/* Top section — avatar, name, follow */}
-                    <div className="flex items-center gap-4 p-4 sm:p-6">
+                    {/* Avatar */}
+                    <Avatar
+                        className="h-24 w-24 sm:h-32 sm:w-32 shrink-0 ring-2 ring-border"
+                        key={user?.avatar?.url || "fallback"}
+                    >
+                        {user?.avatar?.url ? (
+                            <AvatarImage src={user.avatar.url} alt="User avatar" />
+                        ) : null}
+                        <AvatarFallback className="text-3xl sm:text-4xl">
+                            {user?.userName?.[0]?.toUpperCase() || "U"}
+                        </AvatarFallback>
+                    </Avatar>
 
-                        <Avatar className="h-14 w-14 sm:h-20 sm:w-20 shrink-0 ring-2 ring-border" key={user?.avatar?.url || "fallback"}>
-                            {user?.avatar?.url ? (
-                                <AvatarImage src={user.avatar.url} alt="User avatar" />
-                            ) : null}
-                            <AvatarFallback className="text-lg sm:text-3xl">
-                                {user?.userName?.[0]?.toUpperCase() || "U"}
-                            </AvatarFallback>
-                        </Avatar>
+                    {/* Info block — takes remaining width */}
+                    <div className="flex flex-col gap-4 flex-1 min-w-0">
 
-                        <div className="flex-1 min-w-0">
-                            <h2 className="text-base sm:text-lg font-bold leading-tight truncate">
-                                {user?.fullName || (isLoading ? "Loading..." : "Unknown User")}
-                            </h2>
-                            <p className="text-xs sm:text-sm text-muted-foreground truncate mt-0.5">
-                                @{user?.userName}
-                            </p>
+                        {/* FIX 1: Name + Follow — justify-between so follow is always pinned to the right */}
+                        <div className="flex items-start justify-between gap-3">
+                            <div className="min-w-0">
+                                <h1 className="text-xl sm:text-2xl font-bold leading-tight truncate">
+                                    {user?.fullName || (isLoading ? "Loading..." : "Unknown User")}
+                                </h1>
+                                <p className="text-sm text-muted-foreground mt-0.5 truncate">
+                                    @{user?.userName}
+                                </p>
+                            </div>
+                            {/* Follow always top-right, never wraps */}
+                            <button className="shrink-0 bg-primary text-primary-foreground text-sm font-semibold px-5 h-9 rounded-lg hover:opacity-90 transition-opacity">
+                                Follow
+                            </button>
                         </div>
 
-                        <button className="shrink-0 bg-primary text-primary-foreground text-xs sm:text-sm font-semibold px-4 sm:px-5 h-8 sm:h-9 rounded-lg hover:opacity-90 transition-opacity">
-                            Follow
-                        </button>
+                        {/* Stats row — inline like Instagram */}
+                        <div className="flex items-center gap-4 sm:gap-6 text-sm flex-wrap">
+                            <span>
+                                <span className="font-bold text-foreground">{totalPosts}</span>
+                                <span className="text-muted-foreground ml-1">Posts</span>
+                            </span>
+                            <span>
+                                <span className="font-bold text-foreground">{user?.followersCount ?? 0}</span>
+                                <span className="text-muted-foreground ml-1">Followers</span>
+                            </span>
+                            <span>
+                                <span className="font-bold text-foreground">{user?.followingCount ?? 0}</span>
+                                <span className="text-muted-foreground ml-1">Following</span>
+                            </span>
+                        </div>
 
                     </div>
-
-                    {/* Divider */}
-                    <div className="border-t border-border" />
-
-                    {/* Stats row */}
-                    <div className="grid grid-cols-6 divide-x divide-border">
-                        {[
-                            { label: "Posts",   value: totalPosts    },
-                            { label: "Images",  value: stats.images  },
-                            { label: "Videos",  value: stats.videos  },
-                            { label: "Blogs",   value: stats.blogs   },
-                            { label: "Followers", value: user?.followersCount ?? 0 },
-                            { label: "Following", value: user?.followingCount ?? 0 },
-                        ].map(({ label, value }) => (
-                            <div key={label} className="flex flex-col items-center py-3 sm:py-4 gap-0.5">
-                                <span className="text-sm sm:text-base font-bold text-foreground">{value}</span>
-                                <span className="text-[10px] sm:text-xs text-muted-foreground">{label}</span>
-                            </div>
-                        ))}
-                    </div>
-
                 </div>
 
-                {/* Filter bar */}
-                <div className="flex gap-2">
+                {/* ── YouTube-style Tab Filters ── */}
+                <div className="flex border-b border-border overflow-x-auto">
                     {FILTERS.map((f) => (
                         <button
                             key={f.value}
                             onClick={() => setFilter(f.value)}
-                            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors
+                            className={`relative flex items-center gap-1.5 px-4 sm:px-6 py-3 text-sm font-medium whitespace-nowrap transition-colors
                                 ${filter === f.value
-                                    ? "bg-primary text-primary-foreground"
-                                    : "bg-muted text-muted-foreground hover:bg-muted/80"
+                                    ? "text-foreground"
+                                    : "text-muted-foreground hover:text-foreground"
                                 }`}
                         >
                             {f.label}
+                            <span className={`text-xs tabular-nums transition-colors
+                                ${filter === f.value
+                                    ? "text-muted-foreground"
+                                    : "text-muted-foreground/50"
+                                }`}>
+                                {getStatValue(f.statKey)}
+                            </span>
+                            {filter === f.value && (
+                                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-foreground rounded-full" />
+                            )}
                         </button>
                     ))}
                 </div>
 
-                {/* Posts grid */}
-                {postsLoading ? (
-                    <div className="text-center text-muted-foreground py-20">Loading...</div>
-                ) : posts.length === 0 ? (
-                    <div className="text-center text-muted-foreground py-20">No posts found.</div>
-                ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
-                        {posts.map((post) => (
-                            <PostCard key={post._id} post={post} />
-                        ))}
-                    </div>
-                )}
+                {/* FIX 3: Posts Grid — proper responsive columns */}
+                <div className="pt-6">
+                    {postsLoading ? (
+                        <div className="text-center text-muted-foreground py-20">Loading...</div>
+                    ) : posts.length === 0 ? (
+                        <div className="text-center text-muted-foreground py-20">No posts found.</div>
+                    ) : (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5 lg:gap-6">
+                            {posts.map((post) => (
+                                <PostCard key={post._id} post={post} showMultiIndicator={true}/>
+                            ))}
+                        </div>
+                    )}
+                </div>
 
             </div>
         </AppLayout>

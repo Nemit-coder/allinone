@@ -10,19 +10,30 @@ interface Post {
   createdAt: string
 }
 
-export default function PostCard({ post }: { post: Post }) {
+export default function PostCard({ post , showMultiIndicator = false}: { post: Post 
+   showMultiIndicator?: boolean}) {
   return (
     <Link to={`/post/${post._id}`} className="group block rounded-xl border bg-card overflow-hidden flex flex-col hover:shadow-lg transition-shadow duration-200">
 
 
       {/* Thumbnail area */}
       {post.type === "image" && post.media.length > 0 && (
-        <div className="aspect-video w-full overflow-hidden bg-muted">
+        <div className="aspect-video w-full overflow-hidden bg-muted relative">
           <img
             src={post.media[0]}
             alt={post.title}
             className="w-full h-full object-cover"
           />
+           {/* Multi-image indicator */}
+    {showMultiIndicator && post.media.length > 1 && (
+      <div className="absolute top-2 right-2 bg-black/60 text-white text-xs font-semibold px-2 py-0.5 rounded-full flex items-center gap-1">
+         <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="7" y="3" width="14" height="14" rx="2"/>
+          <path d="M3 7v11a2 2 0 002 2h11"/>
+         </svg>
+        {post.media.length}
+      </div>
+    )}
         </div>
       )}
 

@@ -142,7 +142,7 @@ const getPostStats = async (req: Request, res: Response) => {
     })
 
     res.status(200).json({ success: true, stats: result })
-    console.log(result)
+    // console.log(result)
 
   } catch (error: any) {
     res.status(500).json({ success: false, message: error.message })
