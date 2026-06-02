@@ -5,7 +5,7 @@ let socket: Socket | null = null;
 
 export const getSocket = (): Socket => {
   if (!socket) {
-    socket = io((import.meta as any).env.VITE_API_BASE_URL || "http://localhost:3000", {
+    socket = io((import.meta as any).env.VITE_API_URL, {
       auth: { token: getAccessToken() },
       autoConnect: false,
       transports: ["websocket"],
