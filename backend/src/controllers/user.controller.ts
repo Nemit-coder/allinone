@@ -428,6 +428,26 @@ const getNotifications = async (req: Request, res: Response) => {
 }
 
 
+export const searchUsers = async (req: Request, res: Response) => {
+  try {
+    const q = (req.query.q as string)?.trim()
+    if (!q) return res.json({ success: true, users: [] })
+
+    const myId = req.user!.id
+
+    const users = await User.find({
+      _id: { $ne: myId },           // exclude self
+      userName: { $regex: q, $options: "i" }  // case-insensitive
+    })
+      .select("userName avatar")
+      .limit(10)
+
+    res.json({ success: true, users })
+  } catch {
+    res.status(500).json({ message: "Server error" })
+  }
+}
+
 export {
     registerUser, loginUser, getUser, getCurrentUser,
     getPubllicProfileUser, updateUserProfile, deleteUser,

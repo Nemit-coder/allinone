@@ -7,6 +7,7 @@ import path from 'path'
 import userRouter from './src/routes/user.route.ts'
 import authRouter from './src/routes/auth.route.ts'
 import createRouter from './src/routes/create.route.ts'
+import chatRouter from './src/routes/chat.route.ts'
 
 const app = express()
 
@@ -40,5 +41,6 @@ app.use('/api/v1/users', userRouter)
 app.use('/api/v1/create', createRouter)
 // Auth Routes
 app.use('/api/v1/auth', authRouter)
+app.use('/api/v1/chat', chatRouter)
 
 export default app

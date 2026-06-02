@@ -43,7 +43,11 @@ function App() {
         <Route path="/forget-password-email" element={<ForgetPasswordEmail />}/>
         <Route path="/reset-password" element={<ResetPassword />}/>
         <Route path="/auth/callback" element={<AuthCallback />} />
-
+        <Route path="/chat" element={
+        <ProtectedRoute>
+            <Chat isAuthenticated={isAuthenticated} />
+        </ProtectedRoute>
+      } />
         <Route path="/notifications" element={
             <ProtectedRoute>
                 <Notifications isAuthenticated={isAuthenticated} />
