@@ -8,6 +8,7 @@ export const getSocket = (): Socket => {
     socket = io((import.meta as any).env.VITE_API_BASE_URL || "http://localhost:3000", {
       auth: { token: getAccessToken() },
       autoConnect: false,
+      transports: ["websocket"],
     });
   }
   return socket;
