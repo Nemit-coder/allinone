@@ -7,10 +7,9 @@ import { Button } from "../components/ui/button"
 import { Input } from "../components/ui/input"
 import { ScrollArea } from "../components/ui/scroll-area"
 import { Send, Search, MoreVertical, Phone, Video, ArrowLeft, Plus } from "lucide-react"
-import api from "../lib/api"
-import { getSocket, connectSocket, disconnectSocket } from "../lib/socket"
+import api, { getAccessToken } from "../lib/api"
+import { getSocket, connectSocket } from "../lib/socket"
 import UserSearchModal from "../components/chat/UserSearchModel"
-
 // ── Types ──────────────────────────────────────────────────────
 interface Member {
   _id: string
@@ -44,7 +43,7 @@ interface ChatProps {
 // ── Helper: decode JWT to get myId ─────────────────────────────
 const getMyId = (): string => {
   try {
-    const token = localStorage.getItem("accessToken") ?? ""
+    const token = getAccessToken() ?? ""
     return JSON.parse(atob(token.split(".")[1]))?.id ?? ""
   } catch {
     return ""
@@ -57,7 +56,7 @@ const getOther = (conv: Conversation, myId: string): Member =>
 
 // ── Main Component ─────────────────────────────────────────────
 export default function Chat({ isAuthenticated }: ChatProps) {
-  const myId = getMyId()
+  const [myId, setMyId] = useState<string>("")
   const socket = getSocket()
 
   const [conversations, setConversations] = useState<Conversation[]>([])
@@ -74,11 +73,40 @@ export default function Chat({ isAuthenticated }: ChatProps) {
   const bottomRef = useRef<HTMLDivElement>(null)
   const typingTimer = useRef<ReturnType<typeof setTimeout>>()
 
+  // ── Set myId after mount (token guaranteed available) ────────
+  useEffect(() => {
+    setMyId(getMyId())
+  }, [])
+
   // ── Connect socket on mount ────────────────────────────────
   useEffect(() => {
     connectSocket()
-    return () => disconnectSocket()
   }, [])
+
+  // ── Handle socket reconnection ──────────────────────────────
+  useEffect(() => {
+    const handleReconnect = () => {
+      console.log("Socket reconnected")
+      // Rejoin active conversation room and reload messages
+      if (activeConv) {
+        socket.emit("conversation:join", activeConv._id)
+        socket.emit("message:read", { conversationId: activeConv._id })
+        
+        // Reload messages after reconnection
+        setMsgLoading(true)
+        api.get(`/chat/messages/${activeConv._id}`)
+          .then((res) => setMessages(res.data.messages ?? []))
+          .catch(console.error)
+          .finally(() => setMsgLoading(false))
+      }
+    }
+
+    socket.on("connect", handleReconnect)
+    
+    return () => {
+      socket.off("connect", handleReconnect)
+    }
+  }, [activeConv?._id])
 
   // ── Load conversations ─────────────────────────────────────
   useEffect(() => {
@@ -91,16 +119,29 @@ export default function Chat({ isAuthenticated }: ChatProps) {
   // ── Load messages when conversation changes ────────────────
   useEffect(() => {
     if (!activeConv) return
+    
     setMsgLoading(true)
     setMessages([])
 
+    // Fetch messages from DB
     api.get(`/chat/messages/${activeConv._id}`)
-      .then((res) => setMessages(res.data.messages ?? []))
-      .catch(console.error)
+      .then((res) => {
+        setMessages(res.data.messages ?? [])
+      })
+      .catch((err) => {
+        console.error("Failed to load messages:", err)
+        setMessages([])
+      })
       .finally(() => setMsgLoading(false))
 
+    // Join the conversation room
     socket.emit("conversation:join", activeConv._id)
     socket.emit("message:read", { conversationId: activeConv._id })
+
+    // Cleanup: Leave the conversation room when switching or unmounting
+    return () => {
+      socket.emit("conversation:leave", activeConv._id)
+    }
   }, [activeConv?._id])
 
   // ── Scroll to bottom on new messages ──────────────────────
@@ -113,7 +154,11 @@ export default function Chat({ isAuthenticated }: ChatProps) {
     const handleReceive = (msg: Message) => {
       // Append if in active conv
       if (activeConv && msg.conversationId === activeConv._id) {
-        setMessages((prev) => [...prev, msg])
+        setMessages((prev) => {
+          // Avoid duplicates
+          const isDuplicate = prev.some((m) => m._id === msg._id)
+          return isDuplicate ? prev : [...prev, msg]
+        })
         socket.emit("message:read", { conversationId: activeConv._id })
       }
 
@@ -168,7 +213,7 @@ export default function Chat({ isAuthenticated }: ChatProps) {
       socket.off("user:online", handleUserOnline)
       socket.off("user:offline", handleUserOffline)
     }
-  }, [activeConv?._id])
+  }, [activeConv?._id, myId])
 
   // ── Send message ───────────────────────────────────────────
   const handleSend = () => {

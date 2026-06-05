@@ -13,6 +13,7 @@ import {
 } from "../components/ui/dropdown-menu"
 import api, { setAccessToken, getAccessToken } from "../lib/api"
 import { useEffect, useState } from "react"
+import { disconnectSocket } from "../lib/socket"
 
 interface AppLayoutProps {
   children: React.ReactNode
@@ -40,6 +41,7 @@ export default function AppLayout({ children, isAuthenticated }: AppLayoutProps)
     } catch (error) {
       console.error("Logout error:", error)
     } finally {
+      disconnectSocket()
       setAccessToken(null)
       window.location.href = "/signin"
     }

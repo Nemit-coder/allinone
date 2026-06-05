@@ -9,6 +9,15 @@ export const getSocket = (): Socket => {
       auth: { token: getAccessToken() },
       autoConnect: false,
       transports: ["websocket"],
+      reconnection: true,
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 5000,
+      reconnectionAttempts: 5,
+    });
+
+    // Update auth token on reconnect attempts
+    socket.on("reconnect_attempt", () => {
+      socket!.auth = { token: getAccessToken() };
     });
   }
   return socket;
@@ -19,8 +28,9 @@ export const connectSocket = () => {
   if (!s.connected) s.connect();
 };
 
+// Only call this on actual logout, not on page/tab change
 export const disconnectSocket = () => {
-  if (socket?.connected) {
+  if (socket) {
     socket.disconnect();
     socket = null;
   }

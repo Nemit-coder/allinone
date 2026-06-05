@@ -46,7 +46,7 @@ export const initSocket = (io: Server) => {
     const conversations = await Conversation.find({ members: userId });
     conversations.forEach((c) => socket.join(c._id.toString()));
 
-    console.log(`✅ Socket connected: userId=${userId}`);
+    console.log(`✅ Socket connected: userId=${userId}, socketId=${socket.id}, conversations=${conversations.length}`);
 
     // ── Send Message ──────────────────────────────────────────
     socket.on("message:send", async (data: { conversationId: string; text: string }) => {
@@ -80,6 +80,7 @@ export const initSocket = (io: Server) => {
         // Emit to everyone in the room (sender gets confirmation too)
         io.to(conversationId).emit("message:receive", message);
       } catch (err) {
+        console.error("Error sending message:", err);
         socket.emit("error", { message: "Failed to send message" });
       }
     });
@@ -87,6 +88,13 @@ export const initSocket = (io: Server) => {
     // ── Join Room (when user opens a chat) ────────────────────
     socket.on("conversation:join", (conversationId: string) => {
       socket.join(conversationId);
+      console.log(`User ${userId} joined conversation ${conversationId}`);
+    });
+
+    // ── Leave Room (when user navigates away from chat) ───────
+    socket.on("conversation:leave", (conversationId: string) => {
+      socket.leave(conversationId);
+      console.log(`User ${userId} left conversation ${conversationId}`);
     });
 
     // ── Typing Indicators ─────────────────────────────────────
